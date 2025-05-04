@@ -8,7 +8,8 @@ from config import raise_button_pos, call_button_pos, check_button_pos, fold_but
 from config import BUTTON_LENGTH, BUTTON_WIDTH, BUTTON_COLOR, TEXT_COLOR
 from config import bot_stack_pos, player_stack_pos, bot_decision_pos, invalid_text_pos
 from config import PIGGY_LENGTH, PIGGY_WIDTH, pot_pos, BLACK_COLOR, display_round_pos
-from config import display_winner_pos, display_showdown_pos
+from config import display_winner_pos, display_showdown_pos, GREEN_COLOR, DARK_RED_COLOR
+
 
 pygame.font.init()
 font = pygame.font.SysFont(None, 32)
@@ -68,20 +69,6 @@ class PokerView:
         )
         screen.blit(card1, player_hand_pos_1)
         screen.blit(card2, player_hand_pos_2)
-        pygame.display.flip()
-
-    def display_bot_hand(self):
-        """
-        Display the bot's hand on the screen.
-        """
-        card1 = pygamify_image(
-            "cards", (f"{self.bot_hand[0]}.png"), CARD_LENGTH, CARD_WIDTH
-        )
-        card2 = pygamify_image(
-            "cards", (f"{self.player_hand[1]}.png"), CARD_LENGTH, CARD_WIDTH
-        )
-        screen.blit(card1, bot_hand_pos_1)
-        screen.blit(card2, bot_hand_pos_2)
         pygame.display.flip()
 
     def display_flop(self, flop):
@@ -221,7 +208,7 @@ class PokerView:
         Display the bot's decision on the screen.
         """
         text_rect = pygame.Rect(
-            bot_decision_pos, (380, 30)
+            bot_decision_pos, (390, 30)
         )  # Adjust width & height if needed
         background_crop = poker_background.subsurface(text_rect)
         screen.blit(background_crop, text_rect)
@@ -259,6 +246,7 @@ class PokerView:
         background_crop = poker_background.subsurface(text_rect)
         screen.blit(background_crop, text_rect)
         pygame.display.update(text_rect)
+        self.display_hidden_bot_hand()
 
     def display_pot(self, pot):
         """
@@ -282,7 +270,7 @@ class PokerView:
         Display the round on the screen.
         """
         text_rect = pygame.Rect(
-            display_round_pos, (SCREEN_WIDTH * 0.25, 60)
+            display_round_pos, (SCREEN_WIDTH * 0.25, 50)
         )  # Adjust width & height if needed
         background_crop = poker_background.subsurface(text_rect)
         screen.blit(background_crop, text_rect)
@@ -296,7 +284,9 @@ class PokerView:
         """
         self.hide_invalid_text()
 
-        text_surface = huge_font.render(f"{winner} WINS!", True, BLACK_COLOR)
+        text_surface = self.render_text_with_outline(
+            huge_font, f"{winner} WINS!", BLACK_COLOR, GREEN_COLOR
+        )
         text_rect = text_surface.get_rect(center=display_winner_pos)
         screen.blit(text_surface, text_rect)
         pygame.display.flip()
@@ -305,8 +295,9 @@ class PokerView:
         """
         Display the showdown on the screen.
         """
-        text_surface = huge_font.render("SHOWDOWN", True, TEXT_COLOR)
-        screen.blit(text_surface, display_showdown_pos)
+        text_surface = huge_font.render("SHOWDOWN", True, DARK_RED_COLOR)
+        text_rect = text_surface.get_rect(center=display_showdown_pos)
+        screen.blit(text_surface, text_rect)
         pygame.display.flip()
 
     def display_player_round_bet(self, player_bet):
@@ -341,3 +332,40 @@ class PokerView:
             text_surface,
             (bot_stack_pos[0], bot_stack_pos[1] - SCREEN_LENGTH // 20),
         )
+
+    def display_bot_hand(self, bot_hand):
+        """
+        Display the bot's hand on the screen.
+        """
+        card1 = pygamify_image("cards", (f"{bot_hand[0]}.png"), CARD_LENGTH, CARD_WIDTH)
+        card2 = pygamify_image("cards", (f"{bot_hand[1]}.png"), CARD_LENGTH, CARD_WIDTH)
+        screen.blit(card1, bot_hand_pos_1)
+        screen.blit(card2, bot_hand_pos_2)
+        pygame.display.flip()
+
+    def display_hidden_bot_hand(self):
+        """
+        Display the bot's hand on the screen.
+        """
+        card1 = pygamify_image("cards", "card back red.png", CARD_LENGTH, CARD_WIDTH)
+        card2 = pygamify_image("cards", "card back red.png", CARD_LENGTH, CARD_WIDTH)
+        screen.blit(card1, bot_hand_pos_1)
+        screen.blit(card2, bot_hand_pos_2)
+        pygame.display.flip()
+
+    def render_text_with_outline(self, font, message, inside_color, outline_color):
+        base = font.render(message, True, inside_color)
+        outline = pygame.Surface(
+            (base.get_width() + 2, base.get_height() + 2), pygame.SRCALPHA
+        )
+
+        # Draw outline by rendering the text in 8 surrounding positions
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx != 0 or dy != 0:
+                    pos = (dx + 1, dy + 1)
+                    outline.blit(font.render(message, True, outline_color), pos)
+
+        # Draw the main text centered
+        outline.blit(base, (1, 1))
+        return outline

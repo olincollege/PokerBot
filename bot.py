@@ -14,10 +14,11 @@ client = OpenAI(api_key=api_key)
 
 
 # Function to send the prompt to OpenAI API and get a decision
-def get_decision_from_openai(self):
+def get_decision_from_openai(self, actions):
 
     # Prepare the context for the game state
     prompt = f"""
+    Available actions: {', '.join(actions)}
     Poker round: {self.stage}
     Bot (You) hand: {self.bot_hand}
     Community cards: {self.community_cards}
@@ -29,7 +30,7 @@ def get_decision_from_openai(self):
     Previous bot bet: {self.previous_bot_bet}
     Previous actions: Player bet {self.player_bet}, Bot bet {self.bot_bet}
     
-    What should the bot do next, optimally speaking? Respond with one of the following options: 'fold', 'check', 'call', 'raise'. 
+    What should the bot do next, optimally speaking? Respond with one of the following options: {', '.join(actions)}. 
     Please only respond with the action, no extra information. No apostrophes, only the letters for the word.
     """
 
@@ -50,6 +51,7 @@ def get_decision_from_openai(self):
         # Access the 'content' from the first choice's message
         choice = response.choices[0].message.content.strip().lower()
     except (IndexError, KeyError):
+        print("Error parsing OpenAI response. Defaulting to 'fold'.")
         choice = "fold"  # Default action in case of an error in parsing
 
     return choice
@@ -67,7 +69,7 @@ def bot_action(self):
         actions = ["fold", "call", "raise"]
 
     # Use OpenAI to make the decision
-    action = get_decision_from_openai(self)  # Get decision from OpenAI
+    action = get_decision_from_openai(self, actions)  # Get decision from OpenAI
     PokerView.display_bot_decision(
         self, action, self.stage
     )  # Display decision on the screen

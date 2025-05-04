@@ -15,6 +15,8 @@ BUTTON_LENGTH = SCREEN_LENGTH / 10
 BUTTON_COLOR = (139, 0, 0)
 TEXT_COLOR = (211, 211, 211)
 BLACK_COLOR = (0, 0, 0)
+GREEN_COLOR = (0, 100, 0)
+DARK_RED_COLOR = (139, 0, 0)
 PIGGY_WIDTH = SCREEN_LENGTH / 5
 PIGGY_LENGTH = SCREEN_LENGTH / 5
 
@@ -29,9 +31,9 @@ player_hand_pos_2 = (
 )
 bot_hand_pos_1 = (
     SCREEN_WIDTH // 2 - CARD_WIDTH - CARD_SPACING,
-    CARD_LENGTH * 1.6 - CARD_LENGTH,
+    CARD_LENGTH * 1.9 - CARD_LENGTH,
 )
-bot_hand_pos_2 = (SCREEN_WIDTH // 2 + CARD_SPACING, CARD_LENGTH * 1.6 - CARD_LENGTH)
+bot_hand_pos_2 = (SCREEN_WIDTH // 2 + CARD_SPACING, CARD_LENGTH * 1.9 - CARD_LENGTH)
 
 flop_pos_1 = (
     SCREEN_WIDTH // 2 - CARD_WIDTH * 2.5 - 2 * CARD_SPACING,
@@ -67,12 +69,12 @@ check_button_pos = (
 )
 player_stack_pos = (SCREEN_WIDTH // 10, SCREEN_LENGTH // 1.1)
 bot_stack_pos = (SCREEN_WIDTH // 10, SCREEN_LENGTH // 10)
-bot_decision_pos = (SCREEN_WIDTH // 1.3, SCREEN_LENGTH // 10)
+bot_decision_pos = (SCREEN_WIDTH // 1.4, SCREEN_LENGTH // 10)
 invalid_text_pos = (SCREEN_WIDTH // 20, SCREEN_LENGTH // 5)
 pot_pos = (SCREEN_WIDTH // 2 - PIGGY_WIDTH // 2, SCREEN_LENGTH // 1.75)
-display_round_pos = (SCREEN_WIDTH // 2.4, SCREEN_LENGTH // 14)
+display_round_pos = (SCREEN_WIDTH // 2.4, SCREEN_LENGTH // 16)
 display_winner_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 2)
-display_showdown_pos = invalid_text_pos
+display_showdown_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 3)
 
 
 action_buttons = {

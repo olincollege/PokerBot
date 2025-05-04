@@ -165,6 +165,7 @@ class Model:
         self.deal_hands()
         self.view.display_pot(self.pot)
         self.view.display_player_hand(self.player_hand)
+        self.view.display_hidden_bot_hand()
         self.view.display_call_button()
         self.view.display_check_button()
         self.view.display_raise_button()
@@ -224,7 +225,8 @@ class Model:
                 self.run()
 
         # Showdown (winner determination logic to be added)
-        self.view.display_showdown
+        self.view.display_showdown()
+        self.view.display_bot_hand(self.bot_hand)
         print("Showdown! Determine the winner based on hand strength.")
         sleep(3)
         player_hand_rank = self.hand_evaluator(self.player_hand + self.community_cards)
