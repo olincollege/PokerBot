@@ -1,46 +1,27 @@
-def player_bet_handling(self):
-        self.chips[self.players[0]] -= (
-            self.player_bet - self.previous_player_bet
-        )
-        self.previous_player_bet = self.player_bet
+from config import action_buttons
+import pygame
 
 
+def is_button_clicked(rect, event):
+    """
+    Return True if the given rect is clicked with left mouse button.
+    """
+    return (
+        event.type == pygame.MOUSEBUTTONDOWN
+        and event.button == 1  # Left click
+        and rect.collidepoint(event.pos)
+    )
 
-def player_action(self):
-        """Player's action during the betting round (e.g., fold, check, bet, etc.)"""
-        print(f"\n{self.players[0]}'s turn.")
-        if self.player_bet < self.bot_bet:
-            print(f"How much to call: {self.bot_bet-self.player_bet}")
-            action = input("Choose action (fold, call, raise): ").lower()
-        else:
-            action = input("Choose action (fold, check, call, raise): ").lower()
 
-        if action == "fold":
-            return "Bot"  # Player folds, end hand with Bot Win
-        elif action == "check":
-            if self.player_bet < self.bot_bet:
-                print("Invalid action. Try again.")
-                return player_action(self)
-            return 0  # Player checks, stays in the pot
-        elif action == "call":
-            self.player_bet = self.current_bet
-            player_bet_handling(self)
-            print("Player Called")
-            return "continue"
-            # Player calls
-        elif action == "raise":
-            raise_amount = int(input("Raise your current bet by: "))
-            if (
-                self.player_bet + raise_amount > self.bot_bet
-            ):  # Make sure raise amount is more than bot bet
-                self.player_bet += raise_amount
-                self.current_bet = self.player_bet
-                player_bet_handling(self)
-                return "continue"
-            else:
-                print("Invalid Raise Amount Try Again")
-                return self.player_action()
+def player_action_controller(self):
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
 
-        else:
-            print("Invalid action. Try again.")
-            return player_action(self)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for action, rect in self.view.action_buttons.items():
+                    if is_button_clicked(rect, event):
+                        return action
+        pygame.display.flip()
