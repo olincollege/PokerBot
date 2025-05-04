@@ -71,7 +71,7 @@ bot_decision_pos = (SCREEN_WIDTH // 1.3, SCREEN_LENGTH // 10)
 invalid_text_pos = (SCREEN_WIDTH // 20, SCREEN_LENGTH // 5)
 pot_pos = (SCREEN_WIDTH // 2 - PIGGY_WIDTH // 2, SCREEN_LENGTH // 1.75)
 display_round_pos = (SCREEN_WIDTH // 2.4, SCREEN_LENGTH // 14)
-display_winner_pos = (SCREEN_WIDTH // 2.4, SCREEN_LENGTH // 2)
+display_winner_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 2)
 display_showdown_pos = invalid_text_pos
 
 

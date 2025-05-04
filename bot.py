@@ -72,7 +72,6 @@ def bot_action(self):
         self, action, self.stage
     )  # Display decision on the screen
     # Perform action based on the decision
-    action = "raise"
 
     if action == "fold":
         print(self.players[0])

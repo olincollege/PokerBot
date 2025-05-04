@@ -221,7 +221,7 @@ class PokerView:
         Display the bot's decision on the screen.
         """
         text_rect = pygame.Rect(
-            bot_decision_pos, (350, 30)
+            bot_decision_pos, (380, 30)
         )  # Adjust width & height if needed
         background_crop = poker_background.subsurface(text_rect)
         screen.blit(background_crop, text_rect)
@@ -290,11 +290,15 @@ class PokerView:
         screen.blit(text_surface, display_round_pos)
         pygame.display.flip()
 
-    def display_wins(self, winner):
+    def display_winner(self, winner):
+        """
+        Display the winner on the screen.
+        """
         self.hide_invalid_text()
 
-        text_surface = huge_font.render(f"{winner} WINS!", True, TEXT_COLOR)
-        screen.blit(text_surface, display_winner_pos)
+        text_surface = huge_font.render(f"{winner} WINS!", True, BLACK_COLOR)
+        text_rect = text_surface.get_rect(center=display_winner_pos)
+        screen.blit(text_surface, text_rect)
         pygame.display.flip()
 
     def display_showdown(self):
@@ -304,3 +308,36 @@ class PokerView:
         text_surface = huge_font.render("SHOWDOWN", True, TEXT_COLOR)
         screen.blit(text_surface, display_showdown_pos)
         pygame.display.flip()
+
+    def display_player_round_bet(self, player_bet):
+        """
+        Display the player's round bet on the screen.
+        """
+        text_rect = pygame.Rect(
+            (player_stack_pos[0], player_stack_pos[1] - SCREEN_LENGTH // 20), (300, 30)
+        )  # Adjust width & height if needed
+        background_crop = poker_background.subsurface(text_rect)
+        screen.blit(background_crop, text_rect)
+        pygame.display.update(text_rect)
+        text_surface = font.render(f"Round Bet: {player_bet}", True, TEXT_COLOR)
+        screen.blit(
+            text_surface,
+            (player_stack_pos[0], player_stack_pos[1] - SCREEN_LENGTH // 20),
+        )
+        pygame.display.flip()
+
+    def display_bot_round_bet(self, bot_bet):
+        """
+        Display the bot's round bet on the screen.
+        """
+        text_rect = pygame.Rect(
+            (bot_stack_pos[0], bot_stack_pos[1] - SCREEN_LENGTH // 20), (300, 30)
+        )
+        background_crop = poker_background.subsurface(text_rect)
+        screen.blit(background_crop, text_rect)
+        pygame.display.update(text_rect)
+        text_surface = font.render(f"Round Bet: {bot_bet}", True, TEXT_COLOR)
+        screen.blit(
+            text_surface,
+            (bot_stack_pos[0], bot_stack_pos[1] - SCREEN_LENGTH // 20),
+        )

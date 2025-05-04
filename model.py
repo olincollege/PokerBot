@@ -143,6 +143,8 @@ class Model:
             # print(f"Bot Stack: {self.chips[self.players[1]]}")
             # print(f"test: {act_first}")
             print(f"Pot: {self.pot}")
+            self.view.display_player_round_bet(self.player_bet)
+            self.get_round_bets()
             self.view.display_pot(self.pot)
             if self.player_bet < self.bot_bet:
                 self.view.display_bot_stack(self.chips[self.players[1]])
@@ -157,6 +159,7 @@ class Model:
                     return PLAYER_NAME
 
     def run(self):
+        sleep(3)
         self.view.display_background()
         self.reset_after_hand()  # causes errors I think, need to replace to reset bets
         self.deal_hands()
@@ -168,19 +171,23 @@ class Model:
         self.view.display_fold_button()
         self.view.display_player_stack(self.chips[self.players[0]])
         self.view.display_bot_stack(self.chips[self.players[1]])
+        self.get_round_bets()
         print("Starting a new hand of poker!")
         print(f"Pot starts at {self.pot}")
         # Preflop betting
         self.stage = "Preflop"
         self.view.display_round(self.stage)
         result = self.betting_round(self.stage)
+        self.get_round_bets()
         self.view.display_player_stack(self.chips[self.players[0]])
         self.view.display_bot_stack(self.chips[self.players[1]])
         if result in [PLAYER_NAME, "Bot"]:
             print(f"{result} Wins {self.pot}!")
+            self.view.display_winner(result)
             if result == PLAYER_NAME:
                 self.chips[self.players[0]] += self.pot
             else:
+                print(f"pot 2342: {self.pot}")
                 self.chips[self.players[1]] += self.pot
             self.pot = 0
             self.reset_after_hand()
@@ -201,6 +208,7 @@ class Model:
             result = self.betting_round(self.stage)
             self.view.display_player_stack(self.chips[self.players[0]])
             self.view.display_bot_stack(self.chips[self.players[1]])
+            self.get_round_bets()
             if result in [PLAYER_NAME, "Bot"]:
                 self.pot = (
                     self.previous_stack
@@ -208,6 +216,7 @@ class Model:
                     - self.chips[self.players[1]]
                 )
                 print(f"{result} Wins {self.pot}!")
+                self.view.display_winner(result)
                 if result == PLAYER_NAME:
                     self.chips[self.players[0]] += self.pot
                 else:
@@ -215,6 +224,7 @@ class Model:
                 self.run()
 
         # Showdown (winner determination logic to be added)
+        self.view.display_showdown
         print("Showdown! Determine the winner based on hand strength.")
         sleep(3)
         player_hand_rank = self.hand_evaluator(self.player_hand + self.community_cards)
@@ -229,6 +239,7 @@ class Model:
         self.view.display_pot(self.pot)
         if player_hand_rank < bot_hand_rank:
             print(f"Player Wins {self.pot} at Showdown!")
+            self.view.display_winner(PLAYER_NAME)
             self.chips[self.players[0]] += self.pot
             self.run()
 
@@ -240,6 +251,7 @@ class Model:
 
         else:
             print(f"Bot Wins {self.pot} at Showdown!")
+            self.view.display_winner("Bot")
             print(f"Bot chips: {self.chips[self.players[1]]}")
             self.chips[self.players[1]] += self.pot
             print(f"Bot chips: {self.chips[self.players[1]]}")
@@ -277,6 +289,8 @@ class Model:
         self.previous_player_bet = self.player_bet
         self.previous_bot_bet = self.bot_bet
         self.previous_stack = self.chips[self.players[0]] + self.chips[self.players[1]]
+        self.previous_player_chips = self.chips[self.players[0]]
+        self.previous_bot_chips = self.chips[self.players[1]]
         self.chips[self.players[0]] -= self.player_bet
         self.chips[self.players[1]] -= self.bot_bet
         self.pot = (
@@ -285,3 +299,9 @@ class Model:
             - self.chips[self.players[1]]
         )
         self.current_bet = max(self.player_bet, self.bot_bet)
+
+    def get_round_bets(self):
+        player_round_bet = self.previous_player_chips - self.chips[self.players[0]]
+        bot_round_bet = self.previous_bot_chips - self.chips[self.players[1]]
+        self.view.display_player_round_bet(player_round_bet)
+        self.view.display_bot_round_bet(bot_round_bet)
