@@ -1,15 +1,15 @@
-from time import sleep
-import random
-from player import player_action
+from player import player_action, player_bet_handling
 from bot import bot_action
 from hand_evaluator import eval7
-from config import PLAYER_NAME, STARTING_STACK, SMALL_BLIND, BIG_BLIND
-import QBot
 
+# from hand_history import HandHistory
+from time import sleep
+from config import PLAYER_NAME, STARTING_STACK, SMALL_BLIND, BIG_BLIND
+import random
 
 
 class PokerGame:
-    def __init__(self):
+    def __init__(self, PLAYER_NAME=PLAYER_NAME):
         self.players = [PLAYER_NAME, "Bot"]
         self.chips = {PLAYER_NAME: STARTING_STACK, "Bot": STARTING_STACK}
         self.small_blind = SMALL_BLIND
@@ -25,9 +25,6 @@ class PokerGame:
         self.player_bet = 25 if self.small_blind_holder == PLAYER_NAME else 50
         self.bot_bet = 50 if self.small_blind_holder == PLAYER_NAME else 25
         self.current_bet = max(self.player_bet, self.bot_bet)
-        self.previous_bot_bet = 0
-        self.previous_player_bet = 0
-        QBot.starting_chips = self.chips[self.players[1]]
 
     def create_deck(self):
         """Create a deck of cards"""
@@ -107,7 +104,7 @@ class PokerGame:
             else:
                 result = bot_action(self)
                 if result == PLAYER_NAME:  # Bot folded
-                    print("DEBUG - Player should win")
+                    print(f"DEBUG - Player should win")
                     return PLAYER_NAME
 
     def deal_community_cards(self, stage):
@@ -125,8 +122,8 @@ class PokerGame:
         self.pot = self.small_blind + self.big_blind
         print(f"Pot starts at {self.pot}")
         # Preflop betting
-        stage = "Preflop"
-        result = self.betting_round(stage)
+        self.stage = "Preflop"
+        result = self.betting_round(self.stage)
         pot = self.player_bet + self.bot_bet
         if result in [PLAYER_NAME, "Bot"]:
             print(f"{result} Wins {pot}!")
@@ -137,13 +134,13 @@ class PokerGame:
             pot = 0
             return result
 
-        for step in ["flop", "turn", "river"]:
-            stage = step
+        for stage in ["flop", "turn", "river"]:
+            self.stage = stage
             self.reset_after_betting_round()
             self.display_hands()
             print(f"Pot: {pot}")
-            self.deal_community_cards(stage)
-            result = self.betting_round(stage)
+            self.deal_community_cards(self.stage)
+            result = self.betting_round(self.stage)
             pot += self.player_bet + self.bot_bet
             if result in [PLAYER_NAME, "Bot"]:
                 print(f"{result} Wins {pot}!")
@@ -195,9 +192,6 @@ class PokerGame:
 
     def reset_after_hand(self):
         """Reset Many Values after hand ends"""
-        final_reward = self.chips[self.players[1]] - QBot.starting_chips
-        QBot.update(final_reward)
-        QBot.starting_chips = self.chips[self.players[1]]
         self.deck = []
         self.deck = self.create_deck()
         if self.small_blind_holder == "Bot":
