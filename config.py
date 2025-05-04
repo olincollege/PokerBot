@@ -19,6 +19,8 @@ GREEN_COLOR = (0, 100, 0)
 DARK_RED_COLOR = (139, 0, 0)
 PIGGY_WIDTH = SCREEN_LENGTH / 5
 PIGGY_LENGTH = SCREEN_LENGTH / 5
+BLIND_WIDTH = SCREEN_WIDTH / 10
+BLIND_LENGTH = SCREEN_LENGTH / 6
 
 
 player_hand_pos_1 = (
@@ -75,6 +77,8 @@ pot_pos = (SCREEN_WIDTH // 2 - PIGGY_WIDTH // 2, SCREEN_LENGTH // 1.75)
 display_round_pos = (SCREEN_WIDTH // 2.4, SCREEN_LENGTH // 16)
 display_winner_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 2)
 display_showdown_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 3)
+player_blind_pos = (SCREEN_WIDTH // 1.7, SCREEN_LENGTH // 1.35)
+bot_blind_pos = (SCREEN_WIDTH // 1.7, SCREEN_LENGTH // 10)
 
 
 action_buttons = {

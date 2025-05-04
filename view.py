@@ -9,6 +9,7 @@ from config import BUTTON_LENGTH, BUTTON_WIDTH, BUTTON_COLOR, TEXT_COLOR
 from config import bot_stack_pos, player_stack_pos, bot_decision_pos, invalid_text_pos
 from config import PIGGY_LENGTH, PIGGY_WIDTH, pot_pos, BLACK_COLOR, display_round_pos
 from config import display_winner_pos, display_showdown_pos, GREEN_COLOR, DARK_RED_COLOR
+from config import BLIND_LENGTH, BLIND_WIDTH
 
 
 pygame.font.init()
@@ -31,6 +32,8 @@ def pygamify_image(subfolder, image_name, height, width):
 
 poker_background = pygamify_image("", "pokertable.jpg", SCREEN_LENGTH, SCREEN_WIDTH)
 piggy_bank = pygamify_image("", "piggy_bank.png", PIGGY_LENGTH, PIGGY_WIDTH)
+small_blind = pygamify_image("", "small_blind.png", BLIND_LENGTH, BLIND_WIDTH)
+big_blind = pygamify_image("", "big_blind.png", BLIND_LENGTH, BLIND_WIDTH)
 
 
 class PokerView:
@@ -368,3 +371,17 @@ class PokerView:
         # Draw the main text centered
         outline.blit(base, (1, 1))
         return outline
+
+    def display_small_blind(self, position):
+        """
+        Display the small blind on the screen.
+        """
+        screen.blit(small_blind, position)
+        pygame.display.flip()
+
+    def display_big_blind(self, position):
+        """
+        Display the big blind on the screen.
+        """
+        screen.blit(big_blind, position)
+        pygame.display.flip()

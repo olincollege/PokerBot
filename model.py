@@ -7,6 +7,7 @@ import pygame
 # from hand_history import HandHistory
 from time import sleep
 from config import PLAYER_NAME, STARTING_STACK, SMALL_BLIND, BIG_BLIND
+from config import player_blind_pos, bot_blind_pos
 import random
 
 
@@ -135,6 +136,7 @@ class Model:
             result = self.player_action_model()
             if result in [PLAYER_NAME, "Bot"]:
                 return result
+        self.view.display_bot_stack(self.chips[self.players[1]])
 
         while self.player_bet != self.bot_bet:
             # print(f"Player Bet: {self.player_bet}")
@@ -284,9 +286,13 @@ class Model:
         if self.small_blind_holder == "Bot":
             self.small_blind_holder = PLAYER_NAME
             self.big_blind_holder = "Bot"
+            self.view.display_small_blind(player_blind_pos)
+            self.view.display_big_blind(bot_blind_pos)
         else:
             self.small_blind_holder = "Bot"
             self.big_blind_holder = PLAYER_NAME
+            self.view.display_small_blind(bot_blind_pos)
+            self.view.display_big_blind(player_blind_pos)
         self.player_bet = 25 if self.small_blind_holder == PLAYER_NAME else 50
         self.bot_bet = 50 if self.small_blind_holder == PLAYER_NAME else 25
         self.previous_player_bet = self.player_bet
