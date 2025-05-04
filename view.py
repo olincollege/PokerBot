@@ -18,7 +18,7 @@ huge_font = pygame.font.SysFont(None, 100)
 round_font = pygame.font.SysFont(None, 60)
 
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_LENGTH), pygame.RESIZABLE)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_LENGTH))
 
 
 def pygamify_image(subfolder, image_name, height, width):
@@ -244,7 +244,7 @@ class PokerView:
         Hide the invalid text on the screen.
         """
         text_rect = pygame.Rect(
-            invalid_text_pos, (SCREEN_WIDTH * 0.9, 100)
+            invalid_text_pos, (SCREEN_WIDTH * 0.9, 60)
         )  # Adjust width & height if needed
         background_crop = poker_background.subsurface(text_rect)
         screen.blit(background_crop, text_rect)
