@@ -282,7 +282,6 @@ class PokerView:
         """
         Display the winner on the screen.
         """
-        self.hide_invalid_text()
 
         text_surface = self.render_text_with_outline(
             huge_font, f"{winner} WINS!", BLACK_COLOR, GREEN_COLOR

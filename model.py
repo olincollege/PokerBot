@@ -189,9 +189,10 @@ class Model:
                 self.chips[self.players[0]] += self.pot
             else:
                 print(f"pot 2342: {self.pot}")
+                print(f"bot chips: {self.chips[self.players[1]]}")
                 self.chips[self.players[1]] += self.pot
+                print(f"Updated bot chips: {self.chips[self.players[1]]}")
             self.pot = 0
-            self.reset_after_hand()
             self.run()
 
         for stage in ["flop", "turn", "river"]:
