@@ -35,7 +35,7 @@ poker_background = pygamify_image("", "pokertable.jpg", SCREEN_LENGTH, SCREEN_WI
 piggy_bank = pygamify_image("", "piggy_bank.png", PIGGY_LENGTH, PIGGY_WIDTH)
 small_blind = pygamify_image("", "small_blind.png", BLIND_LENGTH, BLIND_WIDTH)
 big_blind = pygamify_image("", "big_blind.png", BLIND_LENGTH, BLIND_WIDTH)
-loading_screen = pygamify_image("", "loading_screen.jpg", SCREEN_LENGTH, SCREEN_WIDTH)
+loading_screen = pygamify_image("", "loading_poker.png", SCREEN_LENGTH, SCREEN_WIDTH)
 
 
 class PokerView:
