@@ -1,27 +1,64 @@
 import numpy as np
 import random
+import json
+import os
+from hand_evaluator import eval5, eval6, eval7
+import itertools
+
+# Load preflop hand strengths
+with open("preflop_strength.json") as f:
+    PREFLOP_LOOKUP = json.load(f)
+
+def canonicalize(hand):
+    # Returns a standardized string for preflop lookup
+    ranks = sorted([card.split("_")[0] for card in hand], key=lambda r: "23456789tjqka".index(r[0].lower()))
+    suits = [card.split("_of_")[1] for card in hand]
+    suited = suits[0] == suits[1]
+    key = ranks[1][0].upper() + ranks[0][0].upper()
+    if suited:
+        key += "s"
+    return key
+
+def get_hand_rank(hand, community):
+    if len(community) == 0:
+        key = canonicalize(hand)
+        return PREFLOP_LOOKUP.get(key, 0.5) * 7462  # normalize to match postflop scale
+    full = hand + community
+    if len(full) == 5:
+        return eval5(full)
+    elif len(full) == 6:
+        return eval6(full)
+    else:
+        return eval7(full)
 
 def bot_bet_handling(self):
-        self.chips[self.players[1]] -= self.bot_bet - self.previous_bot_bet
-        self.previous_bot_bet = self.bot_bet
+    self.chips[self.players[1]] -= self.bot_bet - self.previous_bot_bet
+    self.previous_bot_bet = self.bot_bet
 
 class QBot:
-    def __init__(self, num_buckets=20):
+    def __init__(self, num_buckets=20, save_path="q_table.npy"):
         self.num_buckets = num_buckets
         self.num_states = 4 * num_buckets * 4  # street × bucket × betting_state
-        self.Q = np.zeros((self.num_states, 3))  # fold, call/check, raise
+        self.Q = np.random.rand(self.num_states, 3)  # Random init
         self.alpha = 0.1
         self.gamma = 0.9
         self.epsilon = 0.1
         self.trajectory = []
-        self.starting_chips = None
+        self.save_path = save_path
+        self.load_q_table()
+
+    def load_q_table(self):
+        if os.path.exists(self.save_path):
+            self.Q = np.load(self.save_path)
+
+    def save_q_table(self):
+        np.save(self.save_path, self.Q)
 
     def encode_state(self, street, rank, betting_state):
         bucket = self.get_bucket(rank)
         return street * self.num_buckets * 4 + bucket * 4 + betting_state
 
     def get_bucket(self, rank):
-        # You can customize this based on your evaluator
         return min(int((rank / 7462) * self.num_buckets), self.num_buckets - 1)
 
     def get_valid_actions(self, betting_state, raise_cap_reached=False):
@@ -49,13 +86,13 @@ class QBot:
             discounted = final_reward * (self.gamma ** t)
             self.Q[state][action] += self.alpha * (discounted - self.Q[state][action])
         self.trajectory.clear()
+        self.save_q_table()
 
 def bot_action(self):
-    street_map = {"Pre-Flop": 0, "Flop": 1, "Turn": 2, "River": 3}
+    street_map = {"preflop": 0, "flop": 1, "turn": 2, "river": 3}
     street = street_map[self.stage]
 
-    # Get rank from your evaluator
-    rank = your_rank_eval_function(self.bot_hand, self.community_cards)
+    rank = get_hand_rank(self.bot_hand, self.community_cards)
 
     # Determine betting state
     if self.bot_bet == 0 and self.player_bet == 0:
@@ -67,15 +104,14 @@ def bot_action(self):
     else:
         betting_state = 2  # both have called
 
-    state = QBot.encode_state(street, rank, betting_state)
-    valid = QBot.get_valid_actions(betting_state)
+    state = self.bot.encode_state(street, rank, betting_state)
+    valid = self.bot.get_valid_actions(betting_state)
     if not valid:
-        return 0  # nothing to do
+        return 0
 
-    action = QBot.choose_action(state, valid)
-    QBot.record(state, action)
+    action = self.bot.choose_action(state, valid)
+    self.bot.record(state, action)
 
-    # Apply action
     if action == 0:
         print("Bot folds")
         return self.players[0]
@@ -86,7 +122,7 @@ def bot_action(self):
         bot_bet_handling(self)
         return self.current_bet
     elif action == 2:
-        raise_amount = 20  # fixed for Limit
+        raise_amount = 20
         self.bot_bet = self.player_bet + raise_amount
         self.current_bet = self.bot_bet
         print(f"Bot raises to {self.bot_bet}")
