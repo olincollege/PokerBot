@@ -1,28 +1,25 @@
-from bot import bot_action
-from hand_evaluator import eval7
-
-# from hand_history import HandHistory
-from time import sleep
-from model import Model
-from view import PokerView
-from config import PLAYER_NAME, STARTING_STACK, SMALL_BLIND, BIG_BLIND
-import random
+import pygame
+from player import is_button_clicked
+from config import start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
 
 
 class Controller:
-    def __init__(self, model):
-        self.model = model
-        self.view = PokerView(self.model)
-        self.game_started = False
-        self.cards = []
-        self.player_hand = self.model.player_hand
+    def __init__(self, view):
+        self.start_game_button = pygame.Rect(
+            *start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
+        )
+        self.view = view
 
     def start_game(self):
-        """Start the game by dealing cards and displaying the initial state."""
-        if not self.game_started:
-            self.game_started = True
-            self.model.run()
-            self.model.reset_after_hand()
-            self.game_started = False
+        self.view.display_start_game_button()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
 
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if is_button_clicked(self.start_game_button, event):
+                        return
+            pygame.display.flip()
         # self.view.display_bot_hand()

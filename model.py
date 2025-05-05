@@ -3,6 +3,7 @@ from hand_evaluator import eval7
 from view import PokerView
 from player import player_action_controller
 import pygame
+from controller import Controller
 
 # from hand_history import HandHistory
 from time import sleep
@@ -33,6 +34,9 @@ class Model:
         self.view = PokerView(self)
         self.previous_stack = self.chips[self.players[0]] + self.chips[self.players[1]]
         self.stage = ""
+        self.previous_player_chips = 0
+        self.previous_bot_chips = 0
+        self.controller = Controller(self.view)
 
     def create_deck(self):
         """Create a deck of cards"""
@@ -127,16 +131,17 @@ class Model:
             if result in [PLAYER_NAME, "Bot"]:
                 return result
             result = bot_action(self)
+            self.view.display_bot_stack(self.chips[self.players[1]])
             if result in [PLAYER_NAME, "Bot"]:
                 return result
         else:
             result = bot_action(self)
             if result in [PLAYER_NAME, "Bot"]:
                 return result
+            self.view.display_bot_stack(self.chips[self.players[1]])
             result = self.player_action_model()
             if result in [PLAYER_NAME, "Bot"]:
                 return result
-        self.view.display_bot_stack(self.chips[self.players[1]])
 
         while self.player_bet != self.bot_bet:
             # print(f"Player Bet: {self.player_bet}")
@@ -161,19 +166,16 @@ class Model:
                     return PLAYER_NAME
 
     def run(self):
-        sleep(3)
-        self.view.display_background()
-        self.reset_after_hand()  # causes errors I think, need to replace to reset bets
+        self.controller.start_game()
+        self.reset_after_hand()
         self.deal_hands()
-        self.view.display_pot(self.pot)
-        self.view.display_player_hand(self.player_hand)
-        self.view.display_hidden_bot_hand()
-        self.view.display_call_button()
-        self.view.display_check_button()
-        self.view.display_raise_button()
-        self.view.display_fold_button()
-        self.view.display_player_stack(self.chips[self.players[0]])
-        self.view.display_bot_stack(self.chips[self.players[1]])
+        self.view.initialize_game_view(
+            self.pot,
+            self.player_hand,
+            self.chips[self.players[0]],
+            self.chips[self.players[1]],
+            self.small_blind_holder,
+        )
         self.get_round_bets()
         print("Starting a new hand of poker!")
         print(f"Pot starts at {self.pot}")
@@ -190,7 +192,6 @@ class Model:
             if result == PLAYER_NAME:
                 self.chips[self.players[0]] += self.pot
             else:
-                print(f"pot 2342: {self.pot}")
                 print(f"bot chips: {self.chips[self.players[1]]}")
                 self.chips[self.players[1]] += self.pot
                 print(f"Updated bot chips: {self.chips[self.players[1]]}")

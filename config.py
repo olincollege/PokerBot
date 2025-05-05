@@ -21,6 +21,8 @@ PIGGY_WIDTH = SCREEN_LENGTH / 5
 PIGGY_LENGTH = SCREEN_LENGTH / 5
 BLIND_WIDTH = SCREEN_WIDTH / 10
 BLIND_LENGTH = SCREEN_LENGTH / 6
+START_BUTTON_WIDTH = SCREEN_WIDTH / 4
+START_BUTTON_LENGTH = SCREEN_LENGTH / 13
 
 
 player_hand_pos_1 = (
@@ -79,6 +81,10 @@ display_winner_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 2)
 display_showdown_pos = (SCREEN_WIDTH // 2, SCREEN_LENGTH // 3)
 player_blind_pos = (SCREEN_WIDTH // 1.7, SCREEN_LENGTH // 1.35)
 bot_blind_pos = (SCREEN_WIDTH // 1.7, SCREEN_LENGTH // 10)
+start_game_button_pos = (
+    SCREEN_WIDTH // 2 - START_BUTTON_WIDTH // 2,
+    SCREEN_LENGTH // 1.5 - START_BUTTON_LENGTH // 2,
+)
 
 
 action_buttons = {

@@ -9,7 +9,8 @@ from config import BUTTON_LENGTH, BUTTON_WIDTH, BUTTON_COLOR, TEXT_COLOR
 from config import bot_stack_pos, player_stack_pos, bot_decision_pos, invalid_text_pos
 from config import PIGGY_LENGTH, PIGGY_WIDTH, pot_pos, BLACK_COLOR, display_round_pos
 from config import display_winner_pos, display_showdown_pos, GREEN_COLOR, DARK_RED_COLOR
-from config import BLIND_LENGTH, BLIND_WIDTH
+from config import BLIND_LENGTH, BLIND_WIDTH, player_blind_pos, bot_blind_pos
+from config import start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
 
 
 pygame.font.init()
@@ -34,6 +35,7 @@ poker_background = pygamify_image("", "pokertable.jpg", SCREEN_LENGTH, SCREEN_WI
 piggy_bank = pygamify_image("", "piggy_bank.png", PIGGY_LENGTH, PIGGY_WIDTH)
 small_blind = pygamify_image("", "small_blind.png", BLIND_LENGTH, BLIND_WIDTH)
 big_blind = pygamify_image("", "big_blind.png", BLIND_LENGTH, BLIND_WIDTH)
+loading_screen = pygamify_image("", "loading_screen.jpg", SCREEN_LENGTH, SCREEN_WIDTH)
 
 
 class PokerView:
@@ -58,6 +60,11 @@ class PokerView:
     def display_background(self):
         """Display the poker background on the screen."""
         screen.blit(poker_background, (0, 0))
+        pygame.display.flip()
+
+    def display_loading_screen(self):
+        """Display the loading screen on the screen."""
+        screen.blit(loading_screen, (0, 0))
         pygame.display.flip()
 
     def display_player_hand(self, player_hand):
@@ -287,7 +294,7 @@ class PokerView:
         """
 
         text_surface = self.render_text_with_outline(
-            huge_font, f"{winner} WINS!", BLACK_COLOR, GREEN_COLOR
+            huge_font, f"{winner} WINS!", GREEN_COLOR, BLACK_COLOR
         )
         text_rect = text_surface.get_rect(center=display_winner_pos)
         screen.blit(text_surface, text_rect)
@@ -355,21 +362,24 @@ class PokerView:
         screen.blit(card2, bot_hand_pos_2)
         pygame.display.flip()
 
-    def render_text_with_outline(self, font, message, inside_color, outline_color):
+    def render_text_with_outline(
+        self, font, message, inside_color, outline_color, thickness=2
+    ):
         base = font.render(message, True, inside_color)
+        size = thickness * 2 + 1
         outline = pygame.Surface(
-            (base.get_width() + 2, base.get_height() + 2), pygame.SRCALPHA
+            (base.get_width() + size, base.get_height() + size), pygame.SRCALPHA
         )
 
-        # Draw outline by rendering the text in 8 surrounding positions
-        for dx in [-1, 0, 1]:
-            for dy in [-1, 0, 1]:
+        # Draw outline by rendering text around the center
+        for dx in range(-thickness, thickness + 1):
+            for dy in range(-thickness, thickness + 1):
                 if dx != 0 or dy != 0:
-                    pos = (dx + 1, dy + 1)
+                    pos = (dx + thickness, dy + thickness)
                     outline.blit(font.render(message, True, outline_color), pos)
 
-        # Draw the main text centered
-        outline.blit(base, (1, 1))
+        # Draw the main text in the center
+        outline.blit(base, (thickness, thickness))
         return outline
 
     def display_small_blind(self, position):
@@ -385,3 +395,47 @@ class PokerView:
         """
         screen.blit(big_blind, position)
         pygame.display.flip()
+
+    def display_start_game_button(self):
+        """
+        Display the start game button on the screen with centered text.
+        """
+        start_game_button = pygame.Rect(
+            *start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
+        )
+
+        # Draw the button background
+        pygame.draw.rect(screen, BUTTON_COLOR, start_game_button)
+
+        # Render the text
+        text_surface = font.render("Start New Game", True, TEXT_COLOR)
+
+        # Center the text inside the button
+        text_rect = text_surface.get_rect(center=start_game_button.center)
+
+        # Blit the text
+        screen.blit(text_surface, text_rect)
+        pygame.display.flip()
+
+    def initialize_game_view(
+        self, pot, player_hand, player_stack, bot_stack, small_blind_holder
+    ):
+        """
+        Initialize the game view by displaying the background and player hands.
+        """
+        self.display_background()
+        self.display_pot(pot)
+        self.display_player_hand(player_hand)
+        self.display_hidden_bot_hand()
+        self.display_call_button()
+        self.display_check_button()
+        self.display_raise_button()
+        self.display_fold_button()
+        self.display_player_stack(player_stack)
+        self.display_bot_stack(bot_stack)
+        if small_blind_holder == "PLAYER":
+            self.display_small_blind(player_blind_pos)
+            self.display_big_blind(bot_blind_pos)
+        else:
+            self.display_small_blind(bot_blind_pos)
+            self.display_big_blind(player_blind_pos)
