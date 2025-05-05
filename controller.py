@@ -23,3 +23,5 @@ class Controller:
                         return
             pygame.display.flip()
         # self.view.display_bot_hand()
+    
+    
