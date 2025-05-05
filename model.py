@@ -79,6 +79,11 @@ class Model:
         self.chips[self.players[0]] -= self.player_bet - self.previous_player_bet
         self.previous_player_bet = self.player_bet
 
+    def bot_bet_handling(self):
+        """Handle bot betting by deducting chips"""
+        self.chips[self.players[1]] -= self.bot_bet - self.previous_bot_bet
+        self.previous_bot_bet = self.bot_bet
+
     def get_current_bet_size(self):
         """Return the current fixed bet size for the stage"""
         return BET_SIZES.get(self.stage, BIG_BLIND)
@@ -138,23 +143,34 @@ class Model:
             if result in [PLAYER_NAME, "Bot"]:
                 return result
             result = bot_action(self)
+            # Update bot bet display after bot acts
             self.view.display_bot_stack(self.chips[self.players[1]])
+            self.view.display_bot_round_bet(self.previous_player_chips - self.chips[self.players[0]])
             if result in [PLAYER_NAME, "Bot"]:
                 return result
         else:
             result = bot_action(self)
+            # Update bot bet display immediately after bot acts
+            bot_round_bet = self.previous_bot_chips - self.chips[self.players[1]]
+            self.view.display_bot_stack(self.chips[self.players[1]])
+            self.view.display_bot_round_bet(bot_round_bet)
             if result in [PLAYER_NAME, "Bot"]:
                 return result
-            self.view.display_bot_stack(self.chips[self.players[1]])
             result = self.player_action_model()
             if result in [PLAYER_NAME, "Bot"]:
                 return result
 
         while self.player_bet != self.bot_bet:
             print(f"Pot: {self.pot}")
-            self.view.display_player_round_bet(self.player_bet)
+            # Update displayed bets
+            player_round_bet = self.previous_player_chips - self.chips[self.players[0]]
+            bot_round_bet = self.previous_bot_chips - self.chips[self.players[1]]
+            self.view.display_player_round_bet(player_round_bet)
+            self.view.display_bot_round_bet(bot_round_bet)
+            
             self.get_round_bets()
             self.view.display_pot(self.pot)
+            
             if self.player_bet < self.bot_bet:
                 self.view.display_bot_stack(self.chips[self.players[1]])
                 self.view.display_player_stack(self.chips[self.players[0]])
@@ -163,6 +179,10 @@ class Model:
                     return "Bot"
             else:
                 result = bot_action(self)
+                # Update bot display after action
+                bot_round_bet = self.previous_bot_chips - self.chips[self.players[1]]
+                self.view.display_bot_stack(self.chips[self.players[1]])
+                self.view.display_bot_round_bet(bot_round_bet)
                 if result == PLAYER_NAME:  # Bot folded
                     print(f"DEBUG - Player should win")
                     return PLAYER_NAME
