@@ -18,7 +18,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     view.display_loading_screen()
-    sleep(5)  # Simulate loading time
+    sleep(3)  # Simulate loading time
     model.run()  # This handles model updates and drawing
 
 pygame.quit()

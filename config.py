@@ -1,9 +1,17 @@
 import pygame
 
 PLAYER_NAME = "PLAYER"
-STARTING_STACK = 10000
-SMALL_BLIND = 25
-BIG_BLIND = 50
+STARTING_STACK = 0
+SMALL_BLIND = 1
+BIG_BLIND = 2
+
+BET_SIZES = {
+    "Preflop": 2,
+    "flop": 2,
+    "turn": 4,
+    "river": 4,
+}
+MAX_RAISES_PER_ROUND = 4
 
 SCREEN_WIDTH = 1700
 SCREEN_LENGTH = 900
