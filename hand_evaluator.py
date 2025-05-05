@@ -62,6 +62,9 @@ def eval5(hand):
     return hash_function(p)
 
 
+def eval6(hand):
+    return min(eval5(combo) for combo in itertools.combinations(hand, 5))
+
 def eval7(hand):
     return min(eval5(x) for x in itertools.combinations(hand, 5))
 
