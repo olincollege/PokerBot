@@ -1,4 +1,6 @@
-openai
-random
-os
+pygame
+numpy
 itertools
+random
+json
+os

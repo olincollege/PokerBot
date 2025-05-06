@@ -16,6 +16,19 @@ logger = logging.getLogger('poker_bot')
 
 # Load preflop hand strengths
 def load_preflop_data():
+    """
+    Load preflop hand strength data from a JSON file.
+
+    Returns:
+        dict: A dictionary mapping preflop hand strings (e.g., "AKs", "QQ") to 
+              their estimated strength values (floats between 0 and 1). If the 
+              file is not found, a default dictionary with common hand strengths 
+              is returned instead.
+
+    Logs:
+        - Info message if the data is successfully loaded.
+        - Warning message and a console print if the file is missing.
+    """
     try:
         with open("preflop_strength.json") as f:
             data = json.load(f)
@@ -34,8 +47,22 @@ def load_preflop_data():
 PREFLOP_LOOKUP = load_preflop_data()
 
 def canonicalize(hand):
-    # Returns a standardized string for preflop lookup
-    # Handle cards in format like "10_of_hearts" or "ace_of_spades"
+    """
+    Convert a two-card poker hand into a canonical shorthand representation.
+
+    Args:
+        hand (list of str): A list of two card strings in the format 
+                            "<rank>_of_<suit>", e.g., ["ace_of_spades", "king_of_spades"].
+
+    Returns:
+        str: A canonical hand key in shorthand poker notation (e.g., "AKs", "QJo", "22").
+             "s" is appended for suited hands (same suit), no suffix for offsuit pairs.
+
+    Notes:
+        - Ranks are mapped to standard shorthand: e.g., "10" → "T", "jack" → "J", etc.
+        - Hands are ordered so the higher rank comes first.
+        - If rank is unrecognized, "x" is used as a placeholder.
+    """
     rank_map = {
         "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9",
         "10": "t", "jack": "j", "queen": "q", "king": "k", "ace": "a"
@@ -63,10 +90,26 @@ def canonicalize(hand):
     return key
 
 def get_hand_rank(hand, community):
+    """
+    Evaluate the strength of a poker hand given the community cards.
+
+    Args:
+        hand (list of str): The player's two hole cards (e.g., ["ace_of_spades", "king_of_hearts"]).
+        community (list of str): The shared community cards on the table (0 to 5 cards).
+
+    Returns:
+        float: A numerical score representing hand strength.
+               - For preflop (no community cards), returns a normalized score based on preflop hand strength.
+               - For postflop, uses eval5, eval6, or eval7 depending on the number of total cards.
+
+    Notes:
+        - Preflop values come from a lookup table and are scaled to match postflop score range.
+        - If an exception occurs during evaluation, a default mid-range value is returned.
+    """
     try:
         if len(community) == 0:
             key = canonicalize(hand)
-            return PREFLOP_LOOKUP.get(key, 0.5) * 7462  # normalize to match postflop scale
+            return (1.0 - PREFLOP_LOOKUP.get(key, 0.5)) * 7462  # normalize to match postflop scale
         
         full = hand + community
         if len(full) == 5:
@@ -83,11 +126,35 @@ def get_hand_rank(hand, community):
         return 0.5 * 7462
 
 def bot_bet_handling(self):
+    """
+    Deducts the bot's bet difference from its chip stack and updates the previous bet amount.
+    """
     self.chips[self.players[1]] -= self.bot_bet - self.previous_bot_bet
     self.previous_bot_bet = self.bot_bet
 
 class QBot:
+    """
+    A reinforcement learning bot for Limit Hold'em using Q-learning with function approximation.
+
+    Attributes:
+        num_buckets (int): Number of buckets to discretize hand strength.
+        num_states (int): Total number of discrete states (street × bucket × betting state).
+        Q (np.ndarray): Q-table storing expected values for each (state, action) pair.
+        alpha (float): Learning rate for Q-learning.
+        gamma (float): Discount factor for future rewards.
+        epsilon (float): Exploration rate for epsilon-greedy policy.
+        trajectory (list): List of (state, action) pairs recorded during a hand.
+        save_path (str): Path to save/load the Q-table.
+        games_played (int): Number of games played so far.
+    """
     def __init__(self, num_buckets=20, save_path="q_strategy.json"):
+        """
+        Initialize a new QBot instance.
+
+        Args:
+            num_buckets (int): Number of buckets for discretizing hand strength.
+            save_path (str): File path to load/save Q-table data.
+        """
         self.num_buckets = num_buckets
         self.num_states = 4 * num_buckets * 4  # street × bucket × betting_state
         self.Q = np.zeros((self.num_states, 3))  # Initialize with zeros
@@ -96,11 +163,16 @@ class QBot:
         self.epsilon = 0.1  # Exploration rate
         self.trajectory = []
         self.save_path = save_path
-        self.load_strategy()
         self.games_played = 0
+        self.load_strategy()
 
     def load_strategy(self):
-        """Load Q-table from JSON file"""
+        """
+        Load the Q-table and number of games played from a JSON file.
+
+        If the file is not found or cannot be parsed, initializes the Q-table
+        with small random values to encourage early exploration.
+        """
         if os.path.exists(self.save_path):
             try:
                 with open(self.save_path, 'r') as f:
@@ -114,7 +186,11 @@ class QBot:
                 self.Q = np.random.rand(self.num_states, 3) * 0.1
 
     def save_strategy(self):
-        """Save Q-table to JSON file"""
+        """
+        Save the current Q-table and number of games played to a JSON file.
+
+        Increments the games played counter by 1 before saving.
+        """
         data = {
             'q_table': self.Q.tolist(),
             'games_played': self.games_played + 1
@@ -128,13 +204,43 @@ class QBot:
             print(f"Error saving strategy: {e}")
 
     def encode_state(self, street, rank, betting_state):
+        """
+        Encode the current game state into a single integer index.
+
+        Args:
+            street (int): The current betting round (0=preflop, 1=flop, etc.).
+            rank (float): Hand strength as an integer between 0 and 7462.
+            betting_state (int): A discrete integer encoding the betting situation.
+
+        Returns:
+            int: Encoded state index.
+        """
         bucket = self.get_bucket(rank)
         return street * self.num_buckets * 4 + bucket * 4 + betting_state
 
     def get_bucket(self, rank):
+        """
+        Assign a hand strength rank to a discrete bucket.
+
+        Args:
+            rank (float): Hand strength (0 to 7462).
+
+        Returns:
+            int: Bucket index (0 to num_buckets - 1).
+        """
         return min(int((rank / 7462) * self.num_buckets), self.num_buckets - 1)
 
     def get_valid_actions(self, betting_state, raise_cap_reached=False):
+        """
+        Return a list of valid actions based on the current betting state.
+
+        Args:
+            betting_state (int): The current betting situation (0-3).
+            raise_cap_reached (bool): Whether the raise limit has been reached.
+
+        Returns:
+            list[int]: A list of allowed actions [0=Fold, 1=Call/Check, 2=Raise].
+        """
         if betting_state == 0:  # No bets yet
             return [1, 2]  # Check (1) or Raise (2)
         elif betting_state == 1:  # Bot has bet, player hasn't
@@ -145,6 +251,16 @@ class QBot:
             return [0, 1] if raise_cap_reached else [0, 1, 2]  # Fold (0), Call (1), or Raise (2)
 
     def choose_action(self, state, valid_actions):
+        """
+        Choose an action using an epsilon-greedy policy.
+
+        Args:
+            state (int): Encoded state index.
+            valid_actions (list[int]): A list of valid actions.
+
+        Returns:
+            int: The chosen action index.
+        """
         # Decrease epsilon over time to reduce exploration
         effective_epsilon = max(0.01, self.epsilon * (1 - self.games_played / 1000))
         
@@ -156,9 +272,22 @@ class QBot:
         return int(np.argmax(masked))
 
     def record(self, state, action):
+        """
+        Record a state-action pair during the game for later Q-value updates.
+
+        Args:
+            state (int): The current state.
+            action (int): The chosen action in this state.
+        """
         self.trajectory.append((state, action))
 
     def update(self, final_reward):
+        """
+        Update Q-values from the recorded trajectory using the final reward.
+
+        Args:
+            final_reward (float): The outcome reward of the game (e.g., net chips won).
+        """
         for t, (state, action) in enumerate(reversed(self.trajectory)):
             discounted = final_reward * (self.gamma ** t)
             self.Q[state][action] += self.alpha * (discounted - self.Q[state][action])
@@ -167,7 +296,22 @@ class QBot:
         self.save_strategy()
 
 def bot_action(self):
-    """Bot's action during the betting round"""
+    """
+    Determines and executes the bot's action during its turn in the betting round.
+
+    The method:
+    - Parses the current game stage and encodes it into a numeric 'street' value.
+    - Computes the bot's hand strength using the hand and community cards.
+    - Determines the current betting state between the player and the bot.
+    - Encodes the full game state for the Q-learning agent (QBot).
+    - Selects an action using QBot's epsilon-greedy policy.
+    - Executes the chosen action (fold, call/check, or raise).
+    - Updates internal bet states and returns the outcome.
+
+    Returns:
+        int or str: If the bot folds, returns the player ID (indicating a win).
+                    Otherwise, returns the new current bet value.
+    """
     # Debug print for stage
     print(f"Current stage: {self.stage}")
     
