@@ -11,6 +11,7 @@
 6. [Executing Tests](#executing-tests)
 7. [Gameplay & Controls](#gameplay--controls)
 8. [Contributors](#contributors)
+9. [Pylint Configuration](#pylint-configuration)
 ---
 ## Project Overview
 Welcome to **Limit Hold'em Poker Clone** – a lightweight classroom project that lets you explore the core logic of *fixed-limit* Texas Hold'em without the complexity of a full casino client. It is intentionally streamlined for learning:
@@ -72,3 +73,12 @@ python -m pytest tests/hand_eval_tests.py -v
 python -m pytest tests/ML_bot_tests.py -v
 python -m pytest tests/preflop_strengths_test.py -v
 ```
+
+## Pylint Configuration
+The project includes a `.pylintrc` configuration file that has been customized to work with our specific codebase. Several modifications have been made to the default pylint settings to accommodate certain implementation choices and design patterns:
+
+- **Disabled Warnings**: Some warnings such as `too-many-instance-attributes`, `too-many-arguments`, and `too-many-branches` have been disabled as they're necessary for our poker logic implementation.
+- **Line Length**: Maximum line length has been increased to accommodate more readable code in complex poker calculations.
+- **Import Structure**: Certain import arrangements that pylint typically flags have been allowed to maintain code clarity.
+
+These modifications are essential as strictly following all pylint recommendations would negatively impact code readability and the natural expression of poker game logic. 
