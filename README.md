@@ -68,4 +68,7 @@ Run specific tests with verbose output:
 python -m pytest tests/controller_tests.py -v
 python -m pytest tests/model_tests.py -v
 python -m pytest tests/view_tests.py -v
+python -m pytest tests/hand_eval_tests.py -v
+python -m pytest tests/ML_bot_tests.py -v
+python -m pytest tests/preflop_strengths_test.py -v
 ```
