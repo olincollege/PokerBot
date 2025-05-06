@@ -1,8 +1,20 @@
+"""
+Controller file to initialize the controller class for the Poker game.
+"""
+
 import pygame
 from config import start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
 
 
 class Controller:
+    """
+    Controller class to handle user interactions in the Poker game.
+
+    Attributes:
+        start_game_button (pygame.Rect): Rectangle representing the start game button.
+        view (PokerView): Instance of the PokerView class to handle UI updates.
+    """
+
     def __init__(self, view):
         """
         Initializes the Controller with a PokerView instance and sets up
