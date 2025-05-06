@@ -133,15 +133,8 @@ def get_hand_rank(hand, community):
     try:
         if len(community) == 0:
             key = canonicalize(hand)
-<<<<<<< HEAD
-            return (
-                PREFLOP_LOOKUP.get(key, 0.5) * 7462
-            )  # normalize to match postflop scale
-
-=======
             return (1.0 - PREFLOP_LOOKUP.get(key, 0.5)) * 7462  # normalize to match postflop scale
         
->>>>>>> f7ce6256809ce117e94bccb8784f7617d006f427
         full = hand + community
         if len(full) == 5:
             return eval5(full)
@@ -221,11 +214,6 @@ class QBot:
                 self.Q = np.random.rand(self.num_states, 3) * 0.1
 
     def save_strategy(self):
-<<<<<<< HEAD
-        """Save Q-table to JSON file"""
-        data = {"q_table": self.Q.tolist(), "games_played": self.games_played + 1}
-
-=======
         """
         Save the current Q-table and number of games played to a JSON file.
 
@@ -236,7 +224,6 @@ class QBot:
             'games_played': self.games_played + 1
         }
         
->>>>>>> f7ce6256809ce117e94bccb8784f7617d006f427
         try:
             with open(self.save_path, "w") as f:
                 json.dump(data, f)

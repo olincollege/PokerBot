@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock, mock_open
 from io import StringIO
 
 # Import from the modules to test
-from new_bot import (
+from ML_bot import (
     load_preflop_data, PREFLOP_LOOKUP, canonicalize, get_hand_rank,
     bot_bet_handling, QBot, bot_action
 )
