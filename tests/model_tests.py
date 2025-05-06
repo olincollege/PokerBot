@@ -1,3 +1,10 @@
+"""
+Unit tests for the Model class in the poker game.
+This module tests the functionality of the Model class.
+It includes tests for the initialization of the model, deck creation,
+dealing hands, community cards, betting handling, and hand evaluation.
+"""
+
 import sys
 import types
 import random

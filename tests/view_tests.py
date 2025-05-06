@@ -1,3 +1,8 @@
+"""Unit tests for the PokerView class.
+This module tests the functionality of the PokerView class, specifically
+the display methods for various game elements.
+"""
+
 import sys
 import types
 from unittest.mock import Mock

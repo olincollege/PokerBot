@@ -1,3 +1,9 @@
+"""
+Generate preflop hand strength data for poker hands.
+This script simulates poker hands and calculates the equity of various starting hands.
+It generates a JSON file containing the preflop strength of each hand type.
+It uses a Monte Carlo simulation approach to estimate the equity of hands against random opponents.
+"""
 import random
 import json
 from hand_evaluator import eval7, DECK, LOOKUP, RANK_NAMES, SUIT_NAMES

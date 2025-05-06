@@ -1,3 +1,8 @@
+"""
+Unit tests for the ML_bot module using pytest framework.
+This module tests the functionality of the ML_bot, including loading preflop data.
+"""
+
 import pytest
 import numpy as np
 import json

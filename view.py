@@ -1,4 +1,5 @@
-"""Initializes pygame and loads images for the poker game.
+"""
+Initializes pygame and loads images for the poker game.
 and creates a PokerView class to handle the graphical representation of the game.
 """
 

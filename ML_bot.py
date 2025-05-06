@@ -1,3 +1,8 @@
+"""
+This module implements a Q-learning bot for Limit Hold'em poker.
+It includes functions for hand evaluation, action selection, and Q-learning updates.
+"""
+
 import numpy as np
 import random
 import json

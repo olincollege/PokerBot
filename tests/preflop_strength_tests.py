@@ -1,3 +1,10 @@
+"""
+Unit tests for the preflop strength evaluation module.
+This module tests the functionality of the preflop strength evaluation functions.
+It includes tests for card name conversion, hand generation,
+hand creation from strings, equity simulation, and the overall simulation process.
+"""
+
 import pytest
 import random
 import json

@@ -1,3 +1,9 @@
+"""
+Unit tests for the hand evaluator module.
+This module tests the functionality of the hand evaluation functions,
+including the evaluation of 5-card, 6-card, and 7-card hands.
+"""
+
 import pytest
 import itertools
 import random

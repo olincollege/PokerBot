@@ -1,3 +1,8 @@
+"""
+Unit tests for the controller module in a headless Pygame environment.
+This module tests the functionality of the Controller class, specifically
+"""
+
 import os
 import sys
 import types
