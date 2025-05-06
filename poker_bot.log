@@ -8,3 +8,78 @@
 2025-05-05 23:23:56,724 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
 2025-05-05 23:24:24,378 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
 2025-05-05 23:26:30,299 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
+2025-05-06 00:23:39,078 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
+2025-05-06 00:23:39,080 - training - INFO - Starting training for 1000 iterations
+2025-05-06 00:23:39,317 - training - INFO - Progress: 100/1000 hands played
+Bot 1 wins: 52 (52.0%)
+Bot 2 wins: 47 (47.0%)
+Split pots: 1 (1.0%)
+Average reward for Bot 1: 0.34
+
+2025-05-06 00:23:39,318 - training - INFO - Strategy saved after 100 iterations
+2025-05-06 00:23:39,557 - training - INFO - Progress: 200/1000 hands played
+Bot 1 wins: 107 (53.5%)
+Bot 2 wins: 91 (45.5%)
+Split pots: 2 (1.0%)
+Average reward for Bot 1: 1.08
+
+2025-05-06 00:23:39,558 - training - INFO - Strategy saved after 200 iterations
+2025-05-06 00:23:39,781 - training - INFO - Progress: 300/1000 hands played
+Bot 1 wins: 157 (52.3%)
+Bot 2 wins: 136 (45.3%)
+Split pots: 7 (2.3%)
+Average reward for Bot 1: 0.93
+
+2025-05-06 00:23:39,782 - training - INFO - Strategy saved after 300 iterations
+2025-05-06 00:23:40,039 - training - INFO - Progress: 400/1000 hands played
+Bot 1 wins: 209 (52.2%)
+Bot 2 wins: 183 (45.8%)
+Split pots: 8 (2.0%)
+Average reward for Bot 1: 1.10
+
+2025-05-06 00:23:40,040 - training - INFO - Strategy saved after 400 iterations
+2025-05-06 00:23:40,282 - training - INFO - Progress: 500/1000 hands played
+Bot 1 wins: 256 (51.2%)
+Bot 2 wins: 234 (46.8%)
+Split pots: 10 (2.0%)
+Average reward for Bot 1: 0.65
+
+2025-05-06 00:23:40,283 - training - INFO - Strategy saved after 500 iterations
+2025-05-06 00:23:40,521 - training - INFO - Progress: 600/1000 hands played
+Bot 1 wins: 312 (52.0%)
+Bot 2 wins: 276 (46.0%)
+Split pots: 12 (2.0%)
+Average reward for Bot 1: 0.88
+
+2025-05-06 00:23:40,523 - training - INFO - Strategy saved after 600 iterations
+2025-05-06 00:23:40,773 - training - INFO - Progress: 700/1000 hands played
+Bot 1 wins: 368 (52.6%)
+Bot 2 wins: 319 (45.6%)
+Split pots: 13 (1.9%)
+Average reward for Bot 1: 0.68
+
+2025-05-06 00:23:40,774 - training - INFO - Strategy saved after 700 iterations
+2025-05-06 00:23:41,027 - training - INFO - Progress: 800/1000 hands played
+Bot 1 wins: 420 (52.5%)
+Bot 2 wins: 364 (45.5%)
+Split pots: 16 (2.0%)
+Average reward for Bot 1: 0.69
+
+2025-05-06 00:23:41,029 - training - INFO - Strategy saved after 800 iterations
+2025-05-06 00:23:41,268 - training - INFO - Progress: 900/1000 hands played
+Bot 1 wins: 470 (52.2%)
+Bot 2 wins: 413 (45.9%)
+Split pots: 17 (1.9%)
+Average reward for Bot 1: 0.46
+
+2025-05-06 00:23:41,269 - training - INFO - Strategy saved after 900 iterations
+2025-05-06 00:23:41,508 - training - INFO - Progress: 1000/1000 hands played
+Bot 1 wins: 514 (51.4%)
+Bot 2 wins: 468 (46.8%)
+Split pots: 18 (1.8%)
+Average reward for Bot 1: 0.33
+
+2025-05-06 00:23:41,509 - training - INFO - Strategy saved after 1000 iterations
+2025-05-06 00:23:41,511 - training - INFO - Training complete. Final strategy saved.
+2025-05-06 00:23:49,694 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
+2025-05-06 00:48:36,075 - poker_bot - INFO - Loaded preflop data with 169 hand combinations
