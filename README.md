@@ -81,4 +81,4 @@ The project includes a `.pylintrc` configuration file that has been customized t
 - **Line Length**: Maximum line length has been increased to accommodate more readable code in complex poker calculations.
 - **Import Structure**: Certain import arrangements that pylint typically flags have been allowed to maintain code clarity.
 
-These modifications are essential as strictly following all pylint recommendations would negatively impact code readability and the natural expression of poker game logic. 
+These modifications (and others) are essential as strictly following all pylint recommendations would negatively impact code readability and the natural expression of poker game logic. Refer to the .pylintrc file for a complete list of configurations and disabled warnings.

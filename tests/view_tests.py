@@ -19,7 +19,11 @@ config_mock.CARD_LENGTH = 100
 config_mock.CARD_WIDTH = 70
 
 # Positions – just put everything somewhere on the screen
-_point = lambda: (50, 50)
+
+
+def _point(): return (50, 50)
+
+
 for name in [
     "player_hand_pos_1",
     "player_hand_pos_2",
@@ -122,7 +126,8 @@ pygame_mock.display = types.SimpleNamespace(
 # -- Font ---------------------------------------------------------------------
 pygame_font = types.ModuleType("pygame.font")
 pygame_font.init = lambda: None
-pygame_font.SysFont = lambda *_1, **_2: Mock(render=Mock(return_value=SurfaceMock()))
+pygame_font.SysFont = lambda *_1, **_2: Mock(
+    render=Mock(return_value=SurfaceMock()))
 pygame_mock.font = pygame_font
 
 # -- Transform & image --------------------------------------------------------

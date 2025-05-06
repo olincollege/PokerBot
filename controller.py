@@ -58,16 +58,12 @@ class Controller:
         Returns:
             bool: True if the rectangle is clicked, False otherwise.
         """
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()  # or pygame.quit(); sys.exit()
-            else:
-                return (
-                    event.type == pygame.MOUSEBUTTONDOWN
-                    and event.button == 1
-                    and rect.collidepoint(event.pos)
-                )
+    
+        return (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1
+            and rect.collidepoint(event.pos)
+        )
 
     def player_action_controller(self):
         """
