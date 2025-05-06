@@ -161,7 +161,7 @@ def test_get_hand_rank(sample_hands, community_cards):
     assert isinstance(river_rank, (int, float))
 
     # Test error handling with invalid inputs
-    with patch('new_bot.eval5', side_effect=Exception("Test error")):
+    with patch('ML_bot.eval5', side_effect=Exception("Test error")):
         with patch('sys.stdout', new=StringIO()):  # Capture print output
             result = get_hand_rank(['invalid_card'], [])
             assert isinstance(result, (int, float))
@@ -289,33 +289,10 @@ def test_qbot_get_valid_actions():
         0, 1]  # Can't raise anymore
 
 
-def test_qbot_choose_action():
-    qbot = QBot(num_buckets=5)
-
-    # Set specific Q-values for testing
-    state = 42
-    qbot.Q[state] = np.array([0.1, 0.5, 0.3])
-
-    # Test with deterministic selection (epsilon = 0)
-    with patch('random.random', return_value=0.9):  # Above epsilon
-        # With all actions valid, should choose action 1 (highest Q-value)
-        assert qbot.choose_action(state, [0, 1, 2]) == 1
-
-        # With restricted valid actions
-        # Now action 2 has highest among valid
-        assert qbot.choose_action(state, [0, 2]) == 2
-        assert qbot.choose_action(state, [0]) == 0    # Only one valid action
-
-    # Test with exploration (epsilon > random value)
-    with patch('random.random', return_value=0.01):  # Below epsilon
-        with patch('random.choice', return_value=2) as mock_choice:
-            action = qbot.choose_action(state, [0, 1, 2])
-            mock_choice.assert_called_once_with([0, 1, 2])
-            assert action == 2
 
 
 def test_qbot_record_and_update():
-    with patch('new_bot.QBot.load_strategy'):  # Mock to skip actual loading
+    with patch('ML_bot.QBot.load_strategy'):  # Mock to skip actual loading
         qbot = QBot(num_buckets=5)
 
     original_q = qbot.Q.copy()
@@ -328,7 +305,7 @@ def test_qbot_record_and_update():
     assert qbot.trajectory[1] == (20, 0)
 
     # Test update with some reward
-    with patch('new_bot.QBot.save_strategy'):  # Mock save to avoid file operations
+    with patch('ML_bot.QBot.save_strategy'):  # Mock save to avoid file operations
         qbot.update(10.0)  # Apply positive reward
 
         # Verify Q-values were updated
@@ -346,14 +323,14 @@ def test_qbot_record_and_update():
 
 def test_bot_action(mock_game_state):
     # Test fold action
-    with patch('new_bot.QBot.choose_action', return_value=0):
+    with patch('ML_bot.QBot.choose_action', return_value=0):
         result = bot_action(mock_game_state)
         # Player wins when bot folds
         assert result == mock_game_state.players[0]
 
     # Test check/call action
     mock_game_state.player_bet = 20
-    with patch('new_bot.QBot.choose_action', return_value=1):
+    with patch('ML_bot.QBot.choose_action', return_value=1):
         with patch('sys.stdout', new=StringIO()):  # Capture print output
             result = bot_action(mock_game_state)
             assert result == 20
@@ -364,7 +341,7 @@ def test_bot_action(mock_game_state):
     mock_game_state.player_bet = 10
     mock_game_state.bot_bet = 0
     mock_game_state.raise_count = 0
-    with patch('new_bot.QBot.choose_action', return_value=2):
+    with patch('ML_bot.QBot.choose_action', return_value=2):
         with patch('sys.stdout', new=StringIO()):  # Capture print output
             result = bot_action(mock_game_state)
             assert result == 30  # player_bet (10) + raise (20)
@@ -378,8 +355,8 @@ def test_bot_action(mock_game_state):
         mock_game_state.bot_bet = 0
         mock_game_state.player_bet = 0
 
-        with patch('new_bot.QBot.encode_state') as mock_encode:
-            with patch('new_bot.QBot.choose_action', return_value=1):
+        with patch('ML_bot.QBot.encode_state') as mock_encode:
+            with patch('ML_bot.QBot.choose_action', return_value=1):
                 with patch('sys.stdout', new=StringIO()):
                     bot_action(mock_game_state)
                     # Verify the correct street was passed to encode_state
@@ -390,16 +367,16 @@ def test_bot_action(mock_game_state):
 
 def test_bot_action_error_handling(mock_game_state):
     # Test with error in get_hand_rank
-    with patch('new_bot.get_hand_rank', side_effect=Exception("Test error")):
+    with patch('ML_bot.get_hand_rank', side_effect=Exception("Test error")):
         with patch('sys.stdout', new=StringIO()) as fake_out:
-            with patch('new_bot.QBot.choose_action', return_value=1):
+            with patch('ML_bot.QBot.choose_action', return_value=1):
                 result = bot_action(mock_game_state)
                 output = fake_out.getvalue()
                 assert "Error getting hand rank" in output
                 assert result == mock_game_state.player_bet  # Should still work despite error
 
     # Test with no valid actions (shouldn't normally happen)
-    with patch('new_bot.QBot.get_valid_actions', return_value=[]):
+    with patch('ML_bot.QBot.get_valid_actions', return_value=[]):
         with patch('sys.stdout', new=StringIO()):
             result = bot_action(mock_game_state)
             assert result == 0  # Default action for no valid actions

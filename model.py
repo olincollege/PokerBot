@@ -97,6 +97,16 @@ class Model:
         self.game_history = []  # For tracking results
         self.controller = Controller(self.view)  # Initialize the controller
 
+    @property
+    def deck(self):
+        """Return the deck of cards. Used for testing."""
+        return self._deck
+
+    @deck.setter
+    def deck(self, value):
+        """Set the deck of cards. Used for testing."""
+        self._deck = value
+        
     def create_deck(self):
         """Create a deck of cards
 

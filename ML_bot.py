@@ -27,9 +27,9 @@ def load_preflop_data():
     Load preflop hand strength data from a JSON file.
 
     Returns:
-        dict: A dictionary mapping preflop hand strings (e.g., "AKs", "QQ") to 
-              their estimated strength values (floats between 0 and 1). If the 
-              file is not found, a default dictionary with common hand strengths 
+        dict: A dictionary mapping preflop hand strings (e.g., "AKs", "QQ") to
+              their estimated strength values (floats between 0 and 1). If the
+              file is not found, a default dictionary with common hand strengths
               is returned instead.
 
     Logs:
@@ -68,7 +68,7 @@ def canonicalize(hand):
     Convert a two-card poker hand into a canonical shorthand representation.
 
     Args:
-        hand (list of str): A list of two card strings in the format 
+        hand (list of str): A list of two card strings in the format
                             "<rank>_of_<suit>", e.g., ["ace_of_spades", "king_of_spades"].
 
     Returns:
@@ -138,8 +138,10 @@ def get_hand_rank(hand, community):
     try:
         if len(community) == 0:
             key = canonicalize(hand)
-            return (1.0 - PREFLOP_LOOKUP.get(key, 0.5)) * 7462  # normalize to match postflop scale
-        
+            return (
+                1.0 - PREFLOP_LOOKUP.get(key, 0.5)
+            ) * 7462  # normalize to match postflop scale
+
         full = hand + community
         if len(full) == 5:
             return eval5(full)
@@ -178,6 +180,7 @@ class QBot:
         save_path (str): Path to save/load the Q-table.
         games_played (int): Number of games played so far.
     """
+
     def __init__(self, num_buckets=20, save_path="q_strategy.json"):
         """
         Initialize a new QBot instance.
@@ -224,11 +227,8 @@ class QBot:
 
         Increments the games played counter by 1 before saving.
         """
-        data = {
-            'q_table': self.Q.tolist(),
-            'games_played': self.games_played + 1
-        }
-        
+        data = {"q_table": self.Q.tolist(), "games_played": self.games_played + 1}
+
         try:
             with open(self.save_path, "w") as f:
                 json.dump(data, f)

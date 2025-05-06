@@ -78,10 +78,10 @@ def test_init_defaults(fresh_model):
     assert m.chips[cfg.PLAYER_NAME] == cfg.STARTING_STACK
     assert m.chips["Bot"] == cfg.STARTING_STACK
     # blinds & bets
-    assert m.small_blind == cfg.SMALL_BLIND
-    assert m.big_blind == cfg.BIG_BLIND
+    assert m._small_blind == cfg.SMALL_BLIND
+    assert m._big_blind == cfg.BIG_BLIND
     # deck size & uniqueness
-    assert len(m.deck) == 52 and len(set(m.deck)) == 52
+    assert len(m._deck) == 52 and len(set(m._deck)) == 52
     # raise counter
     assert m.raise_count == 0 and m.max_raises_per_round == cfg.MAX_RAISES_PER_ROUND
 
