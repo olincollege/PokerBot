@@ -96,7 +96,7 @@ def main():
 
     for i, hand in enumerate(hands):
         print(f"[{i+1:3}/{len(hands)}] Simulating {hand}...")
-        table[hand] = round(simulate_equity(hand, num_trials=50000), 4)
+        table[hand] = round(simulate_equity(hand, num_trials=5000), 4)
 
     with open("preflop_strength.json", "w") as f:
         json.dump(table, f, indent=2)
