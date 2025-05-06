@@ -10,11 +10,10 @@ Usage:
         iterations: Number of hands to play during training
 """
 
-import numpy as np
 import random
 import logging
 import argparse
-from ML_bot import QBot, get_hand_rank, canonicalize
+from ML_bot import QBot, get_hand_rank
 
 # Set up logging
 logging.basicConfig(
@@ -74,6 +73,14 @@ class LimitHoldemSelfPlay:
         self.small_bet = small_bet
         self.big_bet = big_bet
         self.starting_chips = starting_chips
+        self.community_cards = []
+        self.hand1 = []
+        self.hand2 = []
+        self.flop = []
+        self.turn = []
+        self.river = []
+        self.stage = ""
+        self.max_raises_reached = False
 
         # Initialize game state
         self.reset_game()
@@ -179,10 +186,9 @@ class LimitHoldemSelfPlay:
 
         if hand1_rank < hand2_rank:  # Lower rank is better in this evaluator
             return 0  # Bot 1 wins
-        elif hand2_rank < hand1_rank:
+        if hand2_rank < hand1_rank:
             return 1  # Bot 2 wins
-        else:
-            return -1  # Split pot
+        return -1  # Split pot
 
     def get_current_bet_size(self):
         """
@@ -195,8 +201,8 @@ class LimitHoldemSelfPlay:
         """
         if self.stage in ["preflop", "flop"]:
             return self.small_bet
-        else:  # turn or river
-            return self.big_bet
+        # turn or river
+        return self.big_bet
 
     def get_bot_action(self, bot_id, bot, opponent_bet, bot_bet):
         """
@@ -290,7 +296,6 @@ class LimitHoldemSelfPlay:
         # Handle blinds for preflop
         if self.stage == "preflop":
             sb_player = 1 - self.button_pos
-            bb_player = self.button_pos
 
             # Post blinds
             if sb_player == 0:
@@ -444,7 +449,7 @@ def train_bot(iterations=1000, save_interval=100, display_progress=True):
     wins = {0: 0, 1: 0, -1: 0}  # -1 represents split pots
     total_reward = 0
 
-    logger.info(f"Starting training for {iterations} iterations")
+    logger.info("Starting training for %d iterations", iterations)
 
     for i in range(iterations):
         # Play a hand
@@ -479,7 +484,7 @@ def train_bot(iterations=1000, save_interval=100, display_progress=True):
         # Save strategy at intervals
         if (i + 1) % save_interval == 0:
             bot.save_strategy()
-            logger.info(f"Strategy saved after {i+1} iterations")
+            logger.info("Strategy saved after %d iterations", i + 1)
 
     # Final save
     bot.save_strategy()
