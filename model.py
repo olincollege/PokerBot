@@ -134,7 +134,7 @@ class Model:
         """
         if stage == "flop":
             self.community_cards = [self._deck.pop() for _ in range(3)]
-        elif stage == "turn" or stage == "river":
+        elif stage in ["turn", "river"]:
             self.community_cards.append(self._deck.pop())
 
     def player_bet_handling(self):
@@ -160,18 +160,18 @@ class Model:
 
         if action == "fold":
             return "Bot"  # Player folds, end hand with Bot Win
-        elif action == "check":
+        if action == "check":
             if self.player_bet < self.bot_bet:
                 self.view.display_invalid_text()
                 return self.player_action_model()
             self.view.hide_invalid_text()
             return 0  # Player checks, stays in the pot
-        elif action == "call":
+        if action == "call":
             self.player_bet = self.current_bet
             self.player_bet_handling()
             self.view.hide_invalid_text()
             return "continue"  # Player calls
-        elif action == "raise":
+        if action == "raise":
             if self.raise_count >= MAX_RAISES_PER_ROUND:
                 self.view.display_invalid_text()
                 return self.player_action_model()
@@ -183,11 +183,11 @@ class Model:
             self.raise_count += 1
             self.view.hide_invalid_text()
             return "continue"
-        else:
-            self.view.display_invalid_text()
-            return self.player_action_model()
 
-    def betting_round(self, stage):
+        self.view.display_invalid_text()
+        return self.player_action_model()
+
+    def betting_round(self):
         """Handle a betting round with limit betting structure
 
         Args:
@@ -242,7 +242,7 @@ class Model:
                 self.view.display_player_stack(self._chips[self._players[0]])
                 result = self.player_action_model()
                 if result == "Bot":  # Player folded
-                    return "Bot"
+                    return result
             else:
                 result = bot_action(self)
                 # Update bot display after action
@@ -250,7 +250,7 @@ class Model:
                 self.view.display_bot_stack(self._chips[self._players[1]])
                 self.view.display_bot_round_bet(bot_round_bet)
                 if result == PLAYER_NAME:  # Bot folded
-                    return PLAYER_NAME
+                    return result
 
     def run(self):
         """Main game loop for running the poker game"""
@@ -274,7 +274,7 @@ class Model:
         # Preflop betting
         self.stage = "Preflop"
         self.view.display_round(self.stage)
-        result = self.betting_round(self.stage)
+        result = self.betting_round()
         self.get_round_bets()
         self.view.display_player_stack(self._chips[self._players[0]])
         self.view.display_bot_stack(self._chips[self._players[1]])
@@ -312,7 +312,7 @@ class Model:
             elif stage == "river":
                 self.view.display_river(self.community_cards[4:5])
 
-            result = self.betting_round(self.stage)
+            result = self.betting_round()
             self.view.display_player_stack(self._chips[self._players[0]])
             self.view.display_bot_stack(self._chips[self._players[1]])
             self.get_round_bets()

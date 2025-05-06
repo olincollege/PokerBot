@@ -2,6 +2,7 @@
 Controller file to initialize the controller class for the Poker game.
 """
 
+import sys
 import pygame
 from config import start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
 
@@ -40,7 +41,7 @@ class Controller:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    sys.exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.is_button_clicked(self.start_game_button, event):
@@ -58,7 +59,7 @@ class Controller:
         Returns:
             bool: True if the rectangle is clicked, False otherwise.
         """
-    
+
         return (
             event.type == pygame.MOUSEBUTTONDOWN
             and event.button == 1
@@ -77,7 +78,7 @@ class Controller:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    sys.exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for action, rect in self.view.action_buttons.items():
