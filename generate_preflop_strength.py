@@ -22,12 +22,25 @@ def to_card_name(rank, suit):
         str: Full card name, e.g., 'ace_of_spades'.
     """
     rank_map = {
-        "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7",
-        "8": "8", "9": "9", "T": "10", "J": "jack", "Q": "queen",
-        "K": "king", "A": "ace",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "T": "10",
+        "J": "jack",
+        "Q": "queen",
+        "K": "king",
+        "A": "ace",
     }
     suit_map = {
-        "s": "spades", "c": "clubs", "d": "diamonds", "h": "hearts",
+        "s": "spades",
+        "c": "clubs",
+        "d": "diamonds",
+        "h": "hearts",
     }
     return f"{rank_map[rank]}_of_{suit_map[suit]}"
 

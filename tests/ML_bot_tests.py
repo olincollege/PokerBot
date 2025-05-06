@@ -11,8 +11,13 @@ from io import StringIO
 
 # Import from the modules to test
 from ML_bot import (
-    load_preflop_data, PREFLOP_LOOKUP, canonicalize, get_hand_rank,
-    bot_bet_handling, QBot, bot_action
+    load_preflop_data,
+    PREFLOP_LOOKUP,
+    canonicalize,
+    get_hand_rank,
+    bot_bet_handling,
+    QBot,
+    bot_action,
 )
 
 # Test fixture for hand combinations
@@ -22,38 +27,33 @@ from ML_bot import (
 def sample_hands():
     return {
         # High pairs
-        'pocket_aces': ['ace_of_spades', 'ace_of_hearts'],
-        'pocket_kings': ['king_of_spades', 'king_of_hearts'],
+        "pocket_aces": ["ace_of_spades", "ace_of_hearts"],
+        "pocket_kings": ["king_of_spades", "king_of_hearts"],
         # Suited hands
-        'ace_king_suited': ['ace_of_spades', 'king_of_spades'],
-        'queen_jack_suited': ['queen_of_hearts', 'jack_of_hearts'],
+        "ace_king_suited": ["ace_of_spades", "king_of_spades"],
+        "queen_jack_suited": ["queen_of_hearts", "jack_of_hearts"],
         # Offsuit hands
-        'ace_king_offsuit': ['ace_of_spades', 'king_of_hearts'],
-        'eight_six_offsuit': ['8_of_spades', '6_of_diamonds'],
+        "ace_king_offsuit": ["ace_of_spades", "king_of_hearts"],
+        "eight_six_offsuit": ["8_of_spades", "6_of_diamonds"],
         # Low pairs
-        'pocket_deuces': ['2_of_spades', '2_of_hearts'],
+        "pocket_deuces": ["2_of_spades", "2_of_hearts"],
     }
 
 
 @pytest.fixture
 def community_cards():
     return {
-        'empty': [],
-        'flop': [
-            'ace_of_clubs',
-            'king_of_diamonds',
-            '2_of_hearts'],
-        'turn': [
-            'ace_of_clubs',
-            'king_of_diamonds',
-            '2_of_hearts',
-            '10_of_spades'],
-        'river': [
-            'ace_of_clubs',
-            'king_of_diamonds',
-            '2_of_hearts',
-            '10_of_spades',
-            '7_of_clubs']}
+        "empty": [],
+        "flop": ["ace_of_clubs", "king_of_diamonds", "2_of_hearts"],
+        "turn": ["ace_of_clubs", "king_of_diamonds", "2_of_hearts", "10_of_spades"],
+        "river": [
+            "ace_of_clubs",
+            "king_of_diamonds",
+            "2_of_hearts",
+            "10_of_spades",
+            "7_of_clubs",
+        ],
+    }
 
 
 @pytest.fixture
@@ -61,7 +61,7 @@ def mock_game_state():
     """Mock game state for testing bot_action and related functions"""
     game = MagicMock()
     game.stage = "preflop"
-    game.bot_hand = ['ace_of_spades', 'king_of_spades']
+    game.bot_hand = ["ace_of_spades", "king_of_spades"]
     game.community_cards = []
     game.bot_bet = 0
     game.player_bet = 0
@@ -80,18 +80,19 @@ def mock_game_state():
 
     return game
 
+
 # Test preflop data loading
 
 
 def test_load_preflop_data():
     # Test with existing file
-    with patch('builtins.open', mock_open(read_data='{"AA": 1.0, "KK": 0.95}')):
+    with patch("builtins.open", mock_open(read_data='{"AA": 1.0, "KK": 0.95}')):
         data = load_preflop_data()
         assert data == {"AA": 1.0, "KK": 0.95}
 
     # Test with missing file
-    with patch('builtins.open', side_effect=FileNotFoundError):
-        with patch('sys.stdout', new=StringIO()):  # Capture print output
+    with patch("builtins.open", side_effect=FileNotFoundError):
+        with patch("sys.stdout", new=StringIO()):  # Capture print output
             data = load_preflop_data()
             assert "AA" in data
             assert isinstance(data, dict)
@@ -103,57 +104,49 @@ def test_preflop_lookup_exists():
     assert isinstance(PREFLOP_LOOKUP, dict)
     assert len(PREFLOP_LOOKUP) > 0
 
+
 # Test hand canonicalization
 
 
 def test_canonicalize(sample_hands):
     # Test pocket pairs
-    assert canonicalize(sample_hands['pocket_aces']) == "AA"
-    assert canonicalize(sample_hands['pocket_kings']) == "KK"
-    assert canonicalize(sample_hands['pocket_deuces']) == "22"
+    assert canonicalize(sample_hands["pocket_aces"]) == "AA"
+    assert canonicalize(sample_hands["pocket_kings"]) == "KK"
+    assert canonicalize(sample_hands["pocket_deuces"]) == "22"
 
     # Test suited hands
-    assert canonicalize(sample_hands['ace_king_suited']) == "AKs"
-    assert canonicalize(sample_hands['queen_jack_suited']) == "QJs"
+    assert canonicalize(sample_hands["ace_king_suited"]) == "AKs"
+    assert canonicalize(sample_hands["queen_jack_suited"]) == "QJs"
 
     # Test offsuit hands
-    assert canonicalize(sample_hands['ace_king_offsuit']) == "AK"
-    assert canonicalize(sample_hands['eight_six_offsuit']) == "86"
+    assert canonicalize(sample_hands["ace_king_offsuit"]) == "AK"
+    assert canonicalize(sample_hands["eight_six_offsuit"]) == "86"
 
     # Test order invariance
-    assert canonicalize(['ace_of_spades', 'king_of_spades']) == canonicalize(
-        ['king_of_spades', 'ace_of_spades'])
-    assert canonicalize(['8_of_hearts', '6_of_hearts']) == canonicalize(
-        ['6_of_hearts', '8_of_hearts'])
+    assert canonicalize(["ace_of_spades", "king_of_spades"]) == canonicalize(
+        ["king_of_spades", "ace_of_spades"]
+    )
+    assert canonicalize(["8_of_hearts", "6_of_hearts"]) == canonicalize(
+        ["6_of_hearts", "8_of_hearts"]
+    )
+
 
 # Test hand ranking function
 
 
 def test_get_hand_rank(sample_hands, community_cards):
     # Test preflop rankings
-    preflop_aa = get_hand_rank(
-        sample_hands['pocket_aces'],
-        community_cards['empty'])
-    preflop_kk = get_hand_rank(
-        sample_hands['pocket_kings'],
-        community_cards['empty'])
-    preflop_22 = get_hand_rank(
-        sample_hands['pocket_deuces'],
-        community_cards['empty'])
+    preflop_aa = get_hand_rank(sample_hands["pocket_aces"], community_cards["empty"])
+    preflop_kk = get_hand_rank(sample_hands["pocket_kings"], community_cards["empty"])
+    preflop_22 = get_hand_rank(sample_hands["pocket_deuces"], community_cards["empty"])
 
     # Higher pairs should have better (lower) ranks
     assert preflop_aa < preflop_kk < preflop_22
 
     # Test with community cards
-    flop_rank = get_hand_rank(
-        sample_hands['pocket_aces'],
-        community_cards['flop'])
-    turn_rank = get_hand_rank(
-        sample_hands['pocket_aces'],
-        community_cards['turn'])
-    river_rank = get_hand_rank(
-        sample_hands['pocket_aces'],
-        community_cards['river'])
+    flop_rank = get_hand_rank(sample_hands["pocket_aces"], community_cards["flop"])
+    turn_rank = get_hand_rank(sample_hands["pocket_aces"], community_cards["turn"])
+    river_rank = get_hand_rank(sample_hands["pocket_aces"], community_cards["river"])
 
     # Ensure the function works with different community card counts
     assert isinstance(flop_rank, (int, float))
@@ -161,10 +154,11 @@ def test_get_hand_rank(sample_hands, community_cards):
     assert isinstance(river_rank, (int, float))
 
     # Test error handling with invalid inputs
-    with patch('ML_bot.eval5', side_effect=Exception("Test error")):
-        with patch('sys.stdout', new=StringIO()):  # Capture print output
-            result = get_hand_rank(['invalid_card'], [])
+    with patch("ML_bot.eval5", side_effect=Exception("Test error")):
+        with patch("sys.stdout", new=StringIO()):  # Capture print output
+            result = get_hand_rank(["invalid_card"], [])
             assert isinstance(result, (int, float))
+
 
 # Test bot bet handling
 
@@ -183,6 +177,7 @@ def test_bot_bet_handling():
     # Verify the chips were properly deducted
     assert mock_game.chips["bot"] == 970  # 1000 - (50 - 20)
     assert mock_game.previous_bot_bet == 50
+
 
 # Tests for QBot class
 
@@ -204,20 +199,17 @@ def test_qbot_initialization():
 
 def test_qbot_load_strategy():
     # Test loading with existing file
-    q_data = {
-        'q_table': [[[0.1, 0.2, 0.3]] * (4 * 10 * 4)],
-        'games_played': 42
-    }
+    q_data = {"q_table": [[[0.1, 0.2, 0.3]] * (4 * 10 * 4)], "games_played": 42}
 
-    with patch('os.path.exists', return_value=True):
-        with patch('builtins.open', mock_open(read_data=json.dumps(q_data))):
+    with patch("os.path.exists", return_value=True):
+        with patch("builtins.open", mock_open(read_data=json.dumps(q_data))):
             qbot = QBot(num_buckets=10, save_path="test_q_strategy.json")
             assert qbot.games_played == 42
 
     # Test loading with error
-    with patch('os.path.exists', return_value=True):
-        with patch('builtins.open', side_effect=Exception("Test error")):
-            with patch('sys.stdout', new=StringIO()):  # Capture print output
+    with patch("os.path.exists", return_value=True):
+        with patch("builtins.open", side_effect=Exception("Test error")):
+            with patch("sys.stdout", new=StringIO()):  # Capture print output
                 qbot = QBot(num_buckets=10, save_path="test_q_strategy.json")
                 # Should initialize with random values
                 assert qbot.Q.shape == (4 * 10 * 4, 3)
@@ -229,15 +221,15 @@ def test_qbot_save_strategy():
     qbot = QBot(num_buckets=5, save_path="test_q_strategy.json")
 
     # Test successful save
-    with patch('builtins.open', mock_open()) as mock_file:
-        with patch('json.dump') as mock_json_dump:
+    with patch("builtins.open", mock_open()) as mock_file:
+        with patch("json.dump") as mock_json_dump:
             qbot.save_strategy()
-            mock_file.assert_called_once_with("test_q_strategy.json", 'w')
+            mock_file.assert_called_once_with("test_q_strategy.json", "w")
             mock_json_dump.assert_called_once()
 
     # Test save with error
-    with patch('builtins.open', side_effect=Exception("Test error")):
-        with patch('sys.stdout', new=StringIO()) as fake_out:
+    with patch("builtins.open", side_effect=Exception("Test error")):
+        with patch("sys.stdout", new=StringIO()) as fake_out:
             qbot.save_strategy()
             output = fake_out.getvalue()
             assert "Error saving strategy" in output
@@ -284,15 +276,14 @@ def test_qbot_get_valid_actions():
     assert qbot.get_valid_actions(3) == [0, 1, 2]
 
     # Test with raise cap reached
-    assert qbot.get_valid_actions(
-        3, raise_cap_reached=True) == [
-        0, 1]  # Can't raise anymore
-
-
+    assert qbot.get_valid_actions(3, raise_cap_reached=True) == [
+        0,
+        1,
+    ]  # Can't raise anymore
 
 
 def test_qbot_record_and_update():
-    with patch('ML_bot.QBot.load_strategy'):  # Mock to skip actual loading
+    with patch("ML_bot.QBot.load_strategy"):  # Mock to skip actual loading
         qbot = QBot(num_buckets=5)
 
     original_q = qbot.Q.copy()
@@ -305,7 +296,7 @@ def test_qbot_record_and_update():
     assert qbot.trajectory[1] == (20, 0)
 
     # Test update with some reward
-    with patch('ML_bot.QBot.save_strategy'):  # Mock save to avoid file operations
+    with patch("ML_bot.QBot.save_strategy"):  # Mock save to avoid file operations
         qbot.update(10.0)  # Apply positive reward
 
         # Verify Q-values were updated
@@ -318,20 +309,21 @@ def test_qbot_record_and_update():
         # Verify games_played was incremented
         assert qbot.games_played == 1
 
+
 # Test bot_action function
 
 
 def test_bot_action(mock_game_state):
     # Test fold action
-    with patch('ML_bot.QBot.choose_action', return_value=0):
+    with patch("ML_bot.QBot.choose_action", return_value=0):
         result = bot_action(mock_game_state)
         # Player wins when bot folds
         assert result == mock_game_state.players[0]
 
     # Test check/call action
     mock_game_state.player_bet = 20
-    with patch('ML_bot.QBot.choose_action', return_value=1):
-        with patch('sys.stdout', new=StringIO()):  # Capture print output
+    with patch("ML_bot.QBot.choose_action", return_value=1):
+        with patch("sys.stdout", new=StringIO()):  # Capture print output
             result = bot_action(mock_game_state)
             assert result == 20
             assert mock_game_state.bot_bet == 20
@@ -341,8 +333,8 @@ def test_bot_action(mock_game_state):
     mock_game_state.player_bet = 10
     mock_game_state.bot_bet = 0
     mock_game_state.raise_count = 0
-    with patch('ML_bot.QBot.choose_action', return_value=2):
-        with patch('sys.stdout', new=StringIO()):  # Capture print output
+    with patch("ML_bot.QBot.choose_action", return_value=2):
+        with patch("sys.stdout", new=StringIO()):  # Capture print output
             result = bot_action(mock_game_state)
             assert result == 30  # player_bet (10) + raise (20)
             assert mock_game_state.bot_bet == 30
@@ -355,9 +347,9 @@ def test_bot_action(mock_game_state):
         mock_game_state.bot_bet = 0
         mock_game_state.player_bet = 0
 
-        with patch('ML_bot.QBot.encode_state') as mock_encode:
-            with patch('ML_bot.QBot.choose_action', return_value=1):
-                with patch('sys.stdout', new=StringIO()):
+        with patch("ML_bot.QBot.encode_state") as mock_encode:
+            with patch("ML_bot.QBot.choose_action", return_value=1):
+                with patch("sys.stdout", new=StringIO()):
                     bot_action(mock_game_state)
                     # Verify the correct street was passed to encode_state
                     mock_encode.assert_called_once()
@@ -367,17 +359,19 @@ def test_bot_action(mock_game_state):
 
 def test_bot_action_error_handling(mock_game_state):
     # Test with error in get_hand_rank
-    with patch('ML_bot.get_hand_rank', side_effect=Exception("Test error")):
-        with patch('sys.stdout', new=StringIO()) as fake_out:
-            with patch('ML_bot.QBot.choose_action', return_value=1):
+    with patch("ML_bot.get_hand_rank", side_effect=Exception("Test error")):
+        with patch("sys.stdout", new=StringIO()) as fake_out:
+            with patch("ML_bot.QBot.choose_action", return_value=1):
                 result = bot_action(mock_game_state)
                 output = fake_out.getvalue()
                 assert "Error getting hand rank" in output
-                assert result == mock_game_state.player_bet  # Should still work despite error
+                assert (
+                    result == mock_game_state.player_bet
+                )  # Should still work despite error
 
     # Test with no valid actions (shouldn't normally happen)
-    with patch('ML_bot.QBot.get_valid_actions', return_value=[]):
-        with patch('sys.stdout', new=StringIO()):
+    with patch("ML_bot.QBot.get_valid_actions", return_value=[]):
+        with patch("sys.stdout", new=StringIO()):
             result = bot_action(mock_game_state)
             assert result == 0  # Default action for no valid actions
 

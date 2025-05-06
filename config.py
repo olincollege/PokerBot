@@ -3,6 +3,7 @@
 # Configuration file for the Poker game.
 # This file contains constants and settings used throughout the game.
 """
+
 import pygame
 
 PLAYER_NAME = "PLAYER"

@@ -106,7 +106,7 @@ class Model:
     def deck(self, value):
         """Set the deck of cards. Used for testing."""
         self._deck = value
-        
+
     def create_deck(self):
         """Create a deck of cards
 

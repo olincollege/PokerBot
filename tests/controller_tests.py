@@ -2,6 +2,7 @@
 Unit tests for the controller module in a headless Pygame environment.
 This module tests the functionality of the Controller class, specifically
 """
+
 import pygame
 import os
 import sys
@@ -16,7 +17,7 @@ import pytest
 # ────────────────────────────────────────────────────────────────────────────
 os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 
-pygame.init() # pylint: disable=no-member
+pygame.init()  # pylint: disable=no-member
 pygame.display.set_mode((1, 1))
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -36,6 +37,7 @@ class DummyView:
     """
     A dummy view class to simulate a UI for testing purposes.
     """
+
     def __init__(self):
         """
         Initializes the DummyView with a flag to track if the game has started.
@@ -96,19 +98,13 @@ def event_stream(events):
 
 def test_is_button_clicked_true_inside_left_click():
     rect = pygame.Rect(0, 0, 50, 50)
-    click = pygame.event.Event(
-        pygame.MOUSEBUTTONDOWN, {
-            "pos": (
-                25, 25), "button": 1})
+    click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, {"pos": (25, 25), "button": 1})
     assert Controller.is_button_clicked(None, rect, click) is True
 
 
 def test_is_button_clicked_false_right_button():
     rect = pygame.Rect(0, 0, 50, 50)
-    click = pygame.event.Event(
-        pygame.MOUSEBUTTONDOWN, {
-            "pos": (
-                25, 25), "button": 3})
+    click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, {"pos": (25, 25), "button": 3})
     assert Controller.is_button_clicked(None, rect, click) is False
 
 
@@ -121,9 +117,8 @@ def test_start_game_returns_after_click(monkeypatch):
     mouse_y = button_y + config_stub.START_BUTTON_LENGTH // 2
 
     click = pygame.event.Event(
-        pygame.MOUSEBUTTONDOWN, {
-            "pos": (
-                mouse_x, mouse_y), "button": 1})
+        pygame.MOUSEBUTTONDOWN, {"pos": (mouse_x, mouse_y), "button": 1}
+    )
 
     with event_stream([click]):
         result = ctrl.start_game()
@@ -142,10 +137,7 @@ def test_player_action_controller_returns_correct_action(monkeypatch):
     ctrl = Controller(view)
 
     # craft a mouse click inside the "call" button
-    click = pygame.event.Event(
-        pygame.MOUSEBUTTONDOWN, {
-            "pos": (
-                55, 10), "button": 1})
+    click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, {"pos": (55, 10), "button": 1})
 
     with event_stream([click]):
         action = ctrl.player_action_controller()

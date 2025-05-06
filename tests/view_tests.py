@@ -132,8 +132,7 @@ pygame_mock.display = types.SimpleNamespace(
 # -- Font ---------------------------------------------------------------------
 pygame_font = types.ModuleType("pygame.font")
 pygame_font.init = lambda: None
-pygame_font.SysFont = lambda *_1, **_2: Mock(
-    render=Mock(return_value=SurfaceMock()))
+pygame_font.SysFont = lambda *_1, **_2: Mock(render=Mock(return_value=SurfaceMock()))
 pygame_mock.font = pygame_font
 
 # -- Transform & image --------------------------------------------------------
@@ -177,6 +176,7 @@ import view  # noqa: E402
 
 class DummyModel:
     """Dummy model class for testing the view."""
+
     player_hand = ("AS", "KD")
     bot_hand = ("7C", "8H")
     community_cards = ("2D", "3S", "4H", "5C", "6D")
@@ -228,6 +228,8 @@ methods_and_args = [
 
 
 @pytest.mark.parametrize("method_name,args", methods_and_args)
-def test_view_methods_do_not_crash(poker_view, method_name, args): # pylint: disable=redefined-outer-name
+def test_view_methods_do_not_crash(
+    poker_view, method_name, args
+):  # pylint: disable=redefined-outer-name
     """Test that view methods run without raising exceptions."""
     _runs_without_exception(getattr(poker_view, method_name), *args)

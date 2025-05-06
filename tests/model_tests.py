@@ -52,8 +52,7 @@ sys.modules["controller"] = ctrl_stub
 
 ml_stub = types.ModuleType("ML_bot")
 ml_stub.bot_action = lambda _model: "continue"
-ml_stub.QBot = lambda *args, **kwargs: types.SimpleNamespace(
-    update=lambda _r: None)
+ml_stub.QBot = lambda *args, **kwargs: types.SimpleNamespace(update=lambda _r: None)
 sys.modules["ML_bot"] = ml_stub
 
 
@@ -179,7 +178,8 @@ def test_reset_after_hand_flips_blinds_and_sets_pot():
     assert m.pot == cfg.SMALL_BLIND + cfg.BIG_BLIND
 
     expected_deduction = (
-        cfg.SMALL_BLIND if m.small_blind_holder == cfg.PLAYER_NAME else cfg.BIG_BLIND)
+        cfg.SMALL_BLIND if m.small_blind_holder == cfg.PLAYER_NAME else cfg.BIG_BLIND
+    )
     assert m.chips[m.players[0]] == chips_before - expected_deduction
 
 
