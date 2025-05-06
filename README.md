@@ -74,16 +74,6 @@ Blinds rotate automatically after each hand and the bot updates its strategy bas
 
 ---
 
----
-
-## Roadmap
-
-* [ ] Chip‑stack sprites that shrink / grow visually
-* [ ] Sound effects for chip placement & card flips
-* [ ] In‑game tutorial overlay on first launch
-* [ ] Optional switch to *no‑limit* mode once students master fixed‑limit logic
-
----
 
 ## Contributors
 
