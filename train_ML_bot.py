@@ -14,8 +14,6 @@ import numpy as np
 import random
 import logging
 import argparse
-import os
-import json
 from ML_bot import QBot, get_hand_rank, canonicalize
 
 # Set up logging
