@@ -344,7 +344,7 @@ class PokerView:
         pygame.display.flip()
 
     def render_text_with_outline(
-        self, message, inside_color, outline_color, thickness=2
+        self, type_font, message, inside_color, outline_color, thickness=2
     ):
         """Render text with an outline.
         Args:
@@ -359,7 +359,7 @@ class PokerView:
         Returns:
             outline(pygame.surface): The rendered text surface with an outline.
         """
-        base = font.render(message, True, inside_color)
+        base = type_font.render(message, True, inside_color)
         size = thickness * 2 + 1
         outline = pygame.Surface(
             (base.get_width() + size, base.get_height() + size), pygame.SRCALPHA
@@ -368,7 +368,7 @@ class PokerView:
             for der_y in range(-thickness, thickness + 1):
                 if der_x != 0 or der_y != 0:
                     pos = (der_x + thickness, der_y + thickness)
-                    outline.blit(font.render(message, True, outline_color), pos)
+                    outline.blit(type_font.render(message, True, outline_color), pos)
         outline.blit(base, (thickness, thickness))
         return outline
 
