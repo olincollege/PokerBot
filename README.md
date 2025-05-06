@@ -2,6 +2,7 @@
 *A student-friendly, fixed-limit Texas Hold'em sandbox built with **Pygame***
 ---
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Architecture](#architecture)
 3. [File Overview](#file-overview)
