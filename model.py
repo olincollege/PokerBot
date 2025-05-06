@@ -1,4 +1,4 @@
-from new_bot import bot_action, QBot
+from ML_bot import bot_action, QBot
 from hand_evaluator import eval7
 from view import PokerView
 from player import player_action_controller
