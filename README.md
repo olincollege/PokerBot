@@ -5,6 +5,7 @@
 ---
 
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Architecture](#architecture)
 3. [Installation](#installation)
@@ -16,18 +17,16 @@
 
 ## Project Overview
 
-Welcome to **Limit Hold’em Poker Clone** – a lightweight classroom project that lets you explore the core logic of *fixed‑limit* Texas Hold’em without the complexity of a full casino client. It is intentionally streamlined for learning:
+Welcome to **Limit Hold’em Poker Clone** – a lightweight classroom project that lets you explore the core logic of *fixed‑limit* Texas Hold’em without the complexity of a full casino client.  It is intentionally streamlined for learning:
 
-* **Model‑View‑Controller** (MVC) architecture keeps graphics, game state, and input handling cleanly separated.  
-* A simple **Q‑learning bot** demonstrates how reinforcement learning can adapt betting strategy over many hands.  
+* **Model‑View‑Controller** (MVC) architecture keeps graphics, game state, and input handling cleanly separated.
+* A simple **Q‑learning bot** demonstrates how reinforcement learning can adapt betting strategy over many hands.
 * Code comments are concise, and there’s **no mandatory automated‑test suite** – students can run, tweak, and immediately see results.
 
+  
 ### Live Demo  
 Try the web build here: <https://v0-softdes-poker-website.vercel.app/>
 
-![Game screenshot](docs/screenshot.png)
-
-> *Figure 1 – Pre‑flop layout in fixed‑limit mode.*
 
 ---
 
@@ -47,3 +46,51 @@ Try the web build here: <https://v0-softdes-poker-website.vercel.app/>
 git clone https://github.com/your‑org/limit‑holdem‑clone.git
 cd limit‑holdem‑clone
 pip install -r requirements.txt   # pygame ≥ 2.6, numpy, eval7
+```
+
+Python 3.9+ is recommended.
+
+---
+
+## Running the Game
+
+```bash
+python main.py
+```
+
+A **Start New Game** button appears; click it (or press **Enter**) to shuffle, post blinds, and begin the hand.
+
+---
+
+## Gameplay & Controls
+
+| Action                          | Input                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Fold / Call / Raise / Check** | *Left‑click* the red buttons on the right                                                       |
+| **Raises**                      | Each click of **Raise** adds exactly one fixed‑limit bet (three total raises allowed per round) |
+| **Quit**                        | Close the window or press `Ctrl+C` in the terminal                                              |
+
+Blinds rotate automatically after each hand and the bot updates its strategy based on the outcome.
+
+---
+
+---
+
+## Roadmap
+
+* [ ] Chip‑stack sprites that shrink / grow visually
+* [ ] Sound effects for chip placement & card flips
+* [ ] In‑game tutorial overlay on first launch
+* [ ] Optional switch to *no‑limit* mode once students master fixed‑limit logic
+
+---
+
+## Contributors
+
+| Name                 | Role                            |
+| -------------------- | ------------------------------- |
+| **Suraj Sajjala**    | Gameplay logic & RL integration |
+| **Sreesanth Adelli** | Assets & UI polish              |
+| **Troy Anderson**    | Architecture guidance           |
+
+> *Built for Olin College students – experiment, modify, and deal the next hand!*  include lin [https://v0-softdes-poker-website.vercel.app/](https://v0-softdes-poker-website.vercel.app/)
