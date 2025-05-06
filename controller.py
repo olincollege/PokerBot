@@ -1,16 +1,28 @@
 import pygame
-from player import is_button_clicked
 from config import start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
 
 
 class Controller:
     def __init__(self, view):
+        """
+        Initializes the Controller with a PokerView instance and sets up
+        the start game button.
+
+        Args:
+            view (PokerView): Instance of the PokerView class.
+        """
         self.start_game_button = pygame.Rect(
             *start_game_button_pos, START_BUTTON_WIDTH, START_BUTTON_LENGTH
         )
         self.view = view
 
     def start_game(self):
+        """
+        Displays the start game button and waits for user interaction to start the game.
+
+        Returns:
+            None
+        """
         self.view.display_start_game_button()
         while True:
             for event in pygame.event.get():
@@ -19,9 +31,43 @@ class Controller:
                     exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if is_button_clicked(self.start_game_button, event):
+                    if self.is_button_clicked(self.start_game_button, event):
                         return
             pygame.display.flip()
-        # self.view.display_bot_hand()
-    
-    
+
+    def is_button_clicked(self, rect, event):
+        """
+        Return True if the given rect is clicked with left mouse button.
+
+        Args:
+            rect (pygame.Rect): The rectangle to check for a click.
+            event (pygame.event.Event): The event to check.
+
+        Returns:
+            bool: True if the rectangle is clicked, False otherwise.
+        """
+        return (
+            event.type == pygame.MOUSEBUTTONDOWN
+            and event.button == 1  # Left click
+            and rect.collidepoint(event.pos)
+        )
+
+    def player_action_controller(self):
+        """
+        Handles player actions by displaying action buttons and waiting for user input.
+
+        Returns:
+            action(str): The action chosen by the player (e.g., "fold", "call", "raise").
+        """
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    for action, rect in self.view.action_buttons.items():
+                        if self.is_button_clicked(rect, event):
+                            return action
+            pygame.display.flip()

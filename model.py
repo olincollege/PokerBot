@@ -1,12 +1,18 @@
 from ML_bot import bot_action, QBot
 from hand_evaluator import eval7
 from view import PokerView
-from player import player_action_controller
 import pygame
 from controller import Controller
 
 from time import sleep
-from config import PLAYER_NAME, STARTING_STACK, SMALL_BLIND, BIG_BLIND, BET_SIZES, MAX_RAISES_PER_ROUND
+from config import (
+    PLAYER_NAME,
+    STARTING_STACK,
+    SMALL_BLIND,
+    BIG_BLIND,
+    BET_SIZES,
+    MAX_RAISES_PER_ROUND,
+)
 from config import player_blind_pos, bot_blind_pos
 import random
 
@@ -25,7 +31,9 @@ class Model:
         self.round_active = True
         self.small_blind_holder = "Bot"
         self.big_blind_holder = PLAYER_NAME
-        self.player_bet = SMALL_BLIND if self.small_blind_holder == PLAYER_NAME else BIG_BLIND
+        self.player_bet = (
+            SMALL_BLIND if self.small_blind_holder == PLAYER_NAME else BIG_BLIND
+        )
         self.bot_bet = BIG_BLIND if self.small_blind_holder == "Bot" else SMALL_BLIND
         self.current_bet = max(self.player_bet, self.bot_bet)
         self.previous_player_bet = 0
@@ -38,8 +46,11 @@ class Model:
         self.controller = Controller(self.view)
         self.raise_count = 0  # Track number of raises in current round
         self.max_raises_per_round = MAX_RAISES_PER_ROUND  # Make accessible to bot
-        self.bot = QBot(num_buckets=20, save_path="q_strategy.json")  # Initialize the bot
+        self.bot = QBot(
+            num_buckets=20, save_path="q_strategy.json"
+        )  # Initialize the bot
         self.game_history = []  # For tracking results
+        self.controller = Controller(self.view)  # Initialize the controller
 
     def create_deck(self):
         """Create a deck of cards"""
@@ -90,7 +101,7 @@ class Model:
 
     def player_action_model(self):
         """Player's action during the betting round (e.g., fold, check, bet, etc.)"""
-        action = player_action_controller(self)
+        action = self.controller.player_action_controller()
         print(f"{action}")
 
         if action == "fold":
@@ -113,7 +124,7 @@ class Model:
                 print("Maximum raises reached for this round. Try another action.")
                 self.view.display_invalid_text()
                 return self.player_action_model()
-                
+
             bet_size = self.get_current_bet_size()
             self.player_bet = self.current_bet + bet_size
             self.current_bet = self.player_bet
@@ -145,7 +156,9 @@ class Model:
             result = bot_action(self)
             # Update bot bet display after bot acts
             self.view.display_bot_stack(self.chips[self.players[1]])
-            self.view.display_bot_round_bet(self.previous_player_chips - self.chips[self.players[0]])
+            self.view.display_bot_round_bet(
+                self.previous_player_chips - self.chips[self.players[0]]
+            )
             if result in [PLAYER_NAME, "Bot"]:
                 return result
         else:
@@ -167,10 +180,10 @@ class Model:
             bot_round_bet = self.previous_bot_chips - self.chips[self.players[1]]
             self.view.display_player_round_bet(player_round_bet)
             self.view.display_bot_round_bet(bot_round_bet)
-            
+
             self.get_round_bets()
             self.view.display_pot(self.pot)
-            
+
             if self.player_bet < self.bot_bet:
                 self.view.display_bot_stack(self.chips[self.players[1]])
                 self.view.display_player_stack(self.chips[self.players[0]])
@@ -201,7 +214,7 @@ class Model:
         self.get_round_bets()
         print("Starting a new hand of poker!")
         print(f"Pot starts at {self.pot}")
-        
+
         # Preflop betting
         self.stage = "Preflop"
         self.view.display_round(self.stage)
@@ -209,17 +222,17 @@ class Model:
         self.get_round_bets()
         self.view.display_player_stack(self.chips[self.players[0]])
         self.view.display_bot_stack(self.chips[self.players[1]])
-        
+
         # Handle result if someone folded
         if result in [PLAYER_NAME, "Bot"]:
             print(f"{result} Wins {self.pot}!")
             self.view.display_winner(result)
-            
+
             # Calculate reward for the bot's learning
             reward = 1.0 if result == "Bot" else -1.0
-            reward *= (self.pot)
+            reward *= self.pot
             self.bot.update(reward)
-            
+
             # Distribute pot
             if result == PLAYER_NAME:
                 self.chips[self.players[0]] += self.pot
@@ -227,7 +240,7 @@ class Model:
                 print(f"bot chips: {self.chips[self.players[1]]}")
                 self.chips[self.players[1]] += self.pot
                 print(f"Updated bot chips: {self.chips[self.players[1]]}")
-            
+
             self.pot = 0
             self.run()
 
@@ -237,7 +250,7 @@ class Model:
             self.reset_after_betting_round()
             self.view.display_pot(self.pot)
             self.deal_community_cards(self.stage)
-            
+
             # Display community cards
             if stage == "flop":
                 self.view.display_flop(self.community_cards[0:3])
@@ -245,12 +258,12 @@ class Model:
                 self.view.display_turn(self.community_cards[3:4])
             elif stage == "river":
                 self.view.display_river(self.community_cards[4:5])
-                
+
             result = self.betting_round(self.stage)
             self.view.display_player_stack(self.chips[self.players[0]])
             self.view.display_bot_stack(self.chips[self.players[1]])
             self.get_round_bets()
-            
+
             # Handle result if someone folded
             if result in [PLAYER_NAME, "Bot"]:
                 self.pot = (
@@ -260,25 +273,25 @@ class Model:
                 )
                 print(f"{result} Wins {self.pot}!")
                 self.view.display_winner(result)
-                
+
                 # Calculate reward for the bot's learning
                 if result == "Bot":
                     reward = 1.0  # Bot wins
                 else:
                     reward = -1.0  # Player wins
-                
+
                 # Scale reward by pot size
-                reward *= (self.pot)
-                
+                reward *= self.pot
+
                 # Update bot strategy with the scaled reward
                 self.bot.update(reward)
-                
+
                 # Distribute pot
                 if result == PLAYER_NAME:
                     self.chips[self.players[0]] += self.pot
                 else:
                     self.chips[self.players[1]] += self.pot
-                    
+
                 self.run()
 
         # Showdown (winner determination)
@@ -290,20 +303,20 @@ class Model:
         bot_hand_rank = self.hand_evaluator(self.bot_hand + self.community_cards)
         print(f"Player hand rank: {player_hand_rank}")
         print(f"Bot hand rank: {bot_hand_rank}")
-        
+
         self.pot = (
             self.previous_stack
             - self.chips[self.players[0]]
             - self.chips[self.players[1]]
         )
         self.view.display_pot(self.pot)
-        
+
         # Determine winner and update bot's strategy
         if player_hand_rank < bot_hand_rank:  # Lower rank is better in the evaluator
             print(f"Player Wins {self.pot} at Showdown!")
             self.view.display_winner(PLAYER_NAME)
             self.chips[self.players[0]] += self.pot
-            reward = -1*self.pot  # Negative reward for losing
+            reward = -1 * self.pot  # Negative reward for losing
             self.bot.update(reward)
             self.run()
         elif player_hand_rank == bot_hand_rank:
@@ -318,7 +331,7 @@ class Model:
             print(f"Bot chips: {self.chips[self.players[1]]}")
             self.chips[self.players[1]] += self.pot
             print(f"Bot chips: {self.chips[self.players[1]]}")
-            reward = 1*self.pot  # Positive reward for winning
+            reward = 1 * self.pot  # Positive reward for winning
             self.bot.update(reward)
             self.run()
 
@@ -344,7 +357,7 @@ class Model:
         """Reset Many Values after hand ends"""
         self.deck = []
         self.deck = self.create_deck()
-        
+
         # Switch blinds
         if self.small_blind_holder == "Bot":
             self.small_blind_holder = PLAYER_NAME
@@ -356,22 +369,25 @@ class Model:
             self.big_blind_holder = PLAYER_NAME
             self.view.display_small_blind(bot_blind_pos)
             self.view.display_big_blind(player_blind_pos)
-            
-        # Set bets according to blinds
-        self.player_bet = SMALL_BLIND if self.small_blind_holder == PLAYER_NAME else BIG_BLIND
-        self.bot_bet = BIG_BLIND if self.small_blind_holder == PLAYER_NAME else SMALL_BLIND
 
-        
+        # Set bets according to blinds
+        self.player_bet = (
+            SMALL_BLIND if self.small_blind_holder == PLAYER_NAME else BIG_BLIND
+        )
+        self.bot_bet = (
+            BIG_BLIND if self.small_blind_holder == PLAYER_NAME else SMALL_BLIND
+        )
+
         self.previous_player_bet = self.player_bet
         self.previous_bot_bet = self.bot_bet
         self.previous_stack = self.chips[self.players[0]] + self.chips[self.players[1]]
         self.previous_player_chips = self.chips[self.players[0]]
         self.previous_bot_chips = self.chips[self.players[1]]
-        
+
         # Post blinds
         self.chips[self.players[0]] -= self.player_bet
         self.chips[self.players[1]] -= self.bot_bet
-        
+
         self.pot = (
             self.previous_stack
             - self.chips[self.players[0]]
