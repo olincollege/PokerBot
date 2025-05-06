@@ -1,3 +1,7 @@
+"""Initializes pygame and loads images for the poker game.
+and creates a PokerView class to handle the graphical representation of the game.
+"""
+
 import os
 import pygame
 
@@ -275,6 +279,7 @@ class PokerView:
         pygame.display.flip()
 
     def display_showdown(self):
+        """Display the showdown message."""
         text_surface = huge_font.render("SHOWDOWN", True, DARK_RED_COLOR)
         text_rect = text_surface.get_rect(center=display_showdown_pos)
         screen.blit(text_surface, text_rect)

@@ -1,10 +1,11 @@
-from controller import Controller
-from model import Model
-from view import PokerView
+"""Main function initializing pygame and running the game loop"""
+
 from time import sleep
 import pygame
 
-# pygame.init()
+from model import Model
+from view import PokerView
+
 
 model = Model()  # Initialize the model
 view = PokerView(model)  # Initialize the view with the model
