@@ -14,7 +14,11 @@
 9. [Pylint Configuration](#pylint-configuration)
 ---
 ## Project Overview
-Welcome to **Limit Hold'em Poker Clone** – a lightweight classroom project that lets you explore the core logic of *fixed-limit* Texas Hold'em without the complexity of a full casino client. It is intentionally streamlined for learning:
+Welcome to **Limit Hold'em Poker Clone** – a lightweight classroom project that lets you explore the core logic of *fixed-limit* Texas Hold'em without the complexity of a full casino client. It is intentionally streamlined for learning.
+
+Link to Project Website: [https://v0-softdes-poker-website.vercel.app/](https://v0-softdes-poker-website.vercel.app/)
+
+
 * **Model-View-Controller** (MVC) architecture keeps graphics, game state, and input handling cleanly separated.  
 * A simple **Q-learning bot** demonstrates how reinforcement learning can adapt betting strategy over many hands.  
 
