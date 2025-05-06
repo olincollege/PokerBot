@@ -7,7 +7,6 @@ hand creation from strings, equity simulation, and the overall simulation proces
 
 import pytest
 import json
-from pathlib import Path
 import os
 
 # Import from the hand evaluator module
@@ -101,10 +100,10 @@ class TestPreflopStrength:
     def test_equity_ordering(self):
         """Test that hand equities follow expected ordering."""
         # Test with small trial count for speed
-        aa_equity = simulate_equity("AA", num_trials=1000)
-        kk_equity = simulate_equity("KK", num_trials=1000)
-        aks_equity = simulate_equity("AKs", num_trials=1000)
-        ako_equity = simulate_equity("AKo", num_trials=1000)
+        aa_equity = simulate_equity("AA", num_trials=5000)
+        kk_equity = simulate_equity("KK", num_trials=5000)
+        aks_equity = simulate_equity("AKs", num_trials=5000)
+        ako_equity = simulate_equity("AKo", num_trials=5000)
         
         # Check expected ordering
         assert aa_equity > kk_equity  # AA beats KK
