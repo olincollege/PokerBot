@@ -3,11 +3,12 @@ This module implements a Q-learning bot for Limit Hold'em poker.
 It includes functions for hand evaluation, action selection, and Q-learning updates.
 """
 
-import numpy as np
 import random
 import json
 import os
 import logging
+
+import numpy as np
 from hand_evaluator import eval5, eval6, eval7
 from view import PokerView
 
@@ -37,9 +38,9 @@ def load_preflop_data():
         - Warning message and a console print if the file is missing.
     """
     try:
-        with open("preflop_strength.json") as f:
-            data = json.load(f)
-            logger.info(f"Loaded preflop data with {len(data)} hand combinations")
+        with open("preflop_strength.json", encoding="utf-8") as file:
+            data = json.load(file)
+            logger.info("Opening file: %s", "preflop_strength.json")
             return data
     except FileNotFoundError:
         logger.warning("preflop_strength.json not found. Using default values.")
@@ -128,7 +129,8 @@ def get_hand_rank(hand, community):
 
     Returns:
         float: A numerical score representing hand strength.
-               - For preflop (no community cards), returns a normalized score based on preflop hand strength.
+               - For preflop (no community cards), returns a normalized score based on preflop
+               hand strength.
                - For postflop, uses eval5, eval6, or eval7 depending on the number of total cards.
 
     Notes:
@@ -149,8 +151,8 @@ def get_hand_rank(hand, community):
             return eval6(full)
         else:
             return eval7(full)
-    except Exception as e:
-        print(f"Error in get_hand_rank: {e}")
+    except Exception as error:
+        print(f"Error in get_hand_rank: {error}")
         print(f"Hand: {hand}")
         print(f"Community: {community}")
         # Fallback to a default value
