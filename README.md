@@ -39,6 +39,7 @@ Welcome to **Limit Hold'em Poker Clone** – a lightweight classroom project tha
 | `train_ML_bot.py`          | Training script for the Q-learning bot                        |
 | `config.py`                | Game configuration settings                                   |
 | `tests/*.py`               | Unit tests for various components                             |
+| `.pylintrc`               | .pylintrc for pylint exceptions                               |
 
 ## Installation
 ```bash
