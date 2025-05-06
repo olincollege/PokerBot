@@ -8,7 +8,6 @@ import pygame
 
 model = Model()  # Initialize the model
 view = PokerView(model)  # Initialize the view with the model
-print(f"cards{model.player_hand}")
 clock = pygame.time.Clock()
 
 running = True
