@@ -5,7 +5,6 @@ including the evaluation of 5-card, 6-card, and 7-card hands.
 """
 
 import pytest
-import itertools
 import random
 from unittest.mock import patch
 from io import StringIO

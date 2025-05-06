@@ -6,8 +6,6 @@ This module tests the functionality of the ML_bot, including loading preflop dat
 import pytest
 import numpy as np
 import json
-import os
-import random
 from unittest.mock import patch, MagicMock, mock_open
 from io import StringIO
 
