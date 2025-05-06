@@ -21,7 +21,9 @@ config_mock.CARD_WIDTH = 70
 # Positions – just put everything somewhere on the screen
 
 
-def _point(): return (50, 50)
+def _point():
+    """Return a default point for positioning elements."""
+    return (50, 50)
 
 
 for name in [
@@ -93,8 +95,8 @@ class SurfaceMock(Mock):
         self._w = 400
         self._h = 300
 
-    # Geometry helpers --------------------------------------------------------
     def get_rect(self, **kwargs):
+        """Return a mock rect object with appropriate dimensions."""
         rect = Mock()
         rect.w = self._w
         rect.h = self._h
@@ -102,15 +104,19 @@ class SurfaceMock(Mock):
         return rect
 
     def subsurface(self, *_):
+        """Return a new surface mock for a subsurface."""
         return SurfaceMock()
 
     def get_width(self):
+        """Return the width of the surface."""
         return self._w
 
     def get_height(self):
+        """Return the height of the surface."""
         return self._h
 
     def convert_alpha(self):
+        """Return self with alpha conversion applied."""
         return self
 
 
@@ -138,7 +144,7 @@ pygame_mock.image = types.SimpleNamespace(load=lambda *_: SurfaceMock())
 pygame_mock.draw = types.SimpleNamespace(rect=Mock())
 
 
-def RectMock(*args):
+def rect_mock(*args):
     """Flexible substitute for pygame.Rect accepting the common signatures.
 
     Real `pygame.Rect` can be built in many ways – two of which the code under
@@ -149,27 +155,28 @@ def RectMock(*args):
     attribute (all the view actually touches).
     """
     if len(args) == 4:  # x, y, w, h
-        x, y, w, h = args
+        pos_x, pos_y, width, height = args
     elif len(args) == 2 and all(isinstance(a, tuple) for a in args):
-        (x, y), (w, h) = args
+        (pos_x, pos_y), (width, height) = args
     else:
         raise TypeError("Unsupported Rect signature in test stub")
 
     rect = Mock()
-    rect.x, rect.y, rect.w, rect.h = x, y, w, h
-    rect.center = (x + w // 2, y + h // 2)
+    rect.x, rect.y, rect.w, rect.h = pos_x, pos_y, width, height
+    rect.center = (pos_x + width // 2, pos_y + height // 2)
     return rect
 
 
-pygame_mock.Rect = RectMock
+pygame_mock.Rect = rect_mock
 
 sys.modules["pygame"] = pygame_mock
 
-
-import view  # noqa: E402 – after mocks are injected
+# Import view after mocks are injected
+import view  # noqa: E402
 
 
 class DummyModel:
+    """Dummy model class for testing the view."""
     player_hand = ("AS", "KD")
     bot_hand = ("7C", "8H")
     community_cards = ("2D", "3S", "4H", "5C", "6D")
@@ -178,11 +185,13 @@ class DummyModel:
 
 
 @pytest.fixture
-def pv():
+def poker_view():
+    """Create and return a PokerView instance for testing."""
     return view.PokerView(DummyModel())
 
 
 def _runs_without_exception(func, *args):
+    """Execute a function with args and verify it doesn't raise an exception."""
     func(*args)
 
 
@@ -202,6 +211,7 @@ methods_and_args = [
     ("display_bot_decision", ("call", "Pre‑Flop")),
     ("display_bot_decision", ("raise", "Turn", 120)),
     ("display_invalid_text", ()),
+    ("display_invalid_text", ()),
     ("hide_invalid_text", ()),
     ("display_pot", (400,)),
     ("display_round", ("Flop",)),
@@ -218,5 +228,6 @@ methods_and_args = [
 
 
 @pytest.mark.parametrize("method_name,args", methods_and_args)
-def test_view_methods_do_not_crash(pv, method_name, args):
-    _runs_without_exception(getattr(pv, method_name), *args)
+def test_view_methods_do_not_crash(poker_view, method_name, args): # pylint: disable=redefined-outer-name
+    """Test that view methods run without raising exceptions."""
+    _runs_without_exception(getattr(poker_view, method_name), *args)
